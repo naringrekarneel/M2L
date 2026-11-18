@@ -39,9 +39,51 @@ def fetch_full_youtube_playlist(playlist_id):
     author = ''
     continuation_token = None
 
+    def extract_continuation_token(it):
+        # 1. Modern lockup continuationItemViewModel (YouTube 2024+)
+        if 'continuationItemViewModel' in it:
+            civm = it['continuationItemViewModel']
+            cmd = civm.get('continuationCommand', {})
+            tok = (
+                cmd.get('innertubeCommand', {}).get('continuationCommand', {}).get('token')
+                or cmd.get('continuationCommand', {}).get('token')
+                or cmd.get('token')
+            )
+            if tok:
+                return tok
+
+        # 2. Classic continuationItemRenderer
+        if 'continuationItemRenderer' in it:
+            cir = it['continuationItemRenderer']
+            tok = (
+                cir.get('continuationEndpoint', {}).get('continuationCommand', {}).get('token')
+                or cir.get('continuationCommand', {}).get('token')
+            )
+            if tok:
+                return tok
+
+        # 3. Deep search for token in any continuation container
+        for k, v in it.items():
+            if 'continuation' in k.lower():
+                stack = [v]
+                while stack:
+                    curr = stack.pop()
+                    if isinstance(curr, dict):
+                        if 'token' in curr and isinstance(curr['token'], str):
+                            return curr['token']
+                        stack.extend(curr.values())
+                    elif isinstance(curr, list):
+                        stack.extend(curr)
+        return None
+
     def parse_items(items):
         nonlocal continuation_token
         for it in items:
+            # Check for continuation tokens
+            tok = extract_continuation_token(it)
+            if tok:
+                continuation_token = tok
+
             # 1. Modern lockupViewModel (YouTube 2024+)
             if 'lockupViewModel' in it:
                 lvm = it['lockupViewModel']
@@ -84,10 +126,6 @@ def fetch_full_youtube_playlist(playlist_id):
                     if dur:
                         item_data['durationText'] = dur
                     videos.append(item_data)
-            # 3. Continuation item for pagination
-            elif 'continuationItemRenderer' in it:
-                cir = it['continuationItemRenderer']
-                continuation_token = cir.get('continuationEndpoint', {}).get('continuationCommand', {}).get('token')
 
     try:
         req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers)
@@ -124,9 +162,10 @@ def fetch_full_youtube_playlist(playlist_id):
             for panel in res.get('panels', []):
                 for sec in panel.get('engagementPanelSectionListRenderer', {}).get('content', {}).get('sectionListRenderer', {}).get('contents', []):
                     for item in sec.get('itemSectionRenderer', {}).get('contents', []):
-                        if 'continuationItemRenderer' in item:
-                            cir = item['continuationItemRenderer']
-                            continuation_token = cir.get('continuationEndpoint', {}).get('continuationCommand', {}).get('token')
+                        tok = extract_continuation_token(item)
+                        if tok:
+                            continuation_token = tok
+                            break
 
         # Paginate to fetch remaining batches (e.g. videos 100-200, 200-300...)
         page_count = 1
