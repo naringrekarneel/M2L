@@ -611,11 +611,11 @@
                 <div class="text-center mb-12 reveal-item">
                     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 border border-slate-300 shadow-md backdrop-blur-md mb-4">
                         <span class="w-2 h-2 rounded-full bg-brand-green"></span>
-                        <span class="text-xs sm:text-sm font-black uppercase tracking-widest text-slate-900">
+                        <span class="text-xs sm:text-sm font-black uppercase tracking-widest text-slate-900" id="metricsSectionBadge">
                             Calibrated Daily Pacing
                         </span>
                     </div>
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-brand-dark tracking-tight drop-shadow-sm">
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-brand-dark tracking-tight drop-shadow-sm" id="metricsSectionHeading">
                         Turn any massive course into a balanced daily quota.
                     </h2>
                 </div>
@@ -631,7 +631,7 @@
                             
                             <!-- Top Label & Ticket Code -->
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80">
+                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80" id="ticketDurationTitle">
                                     Total Duration
                                 </span>
                                 <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-brand-dark/10 text-brand-dark">
@@ -641,15 +641,15 @@
 
                             <!-- Massive Bold Number -->
                             <div class="my-2">
-                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left">
-                                    56 Hrs
+                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketTotalDurationVal">
+                                    24.5 Hrs
                                 </span>
                             </div>
 
                             <!-- Ticket Subtext Stub -->
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span>SAMPLE COURSE</span>
-                                <span class="font-mono">BALANCED LOAD</span>
+                                <span id="ticketDurationSubLeft">SAMPLE COURSE</span>
+                                <span class="font-mono" id="ticketDurationSubRight">BALANCED LOAD</span>
                             </div>
                         </div>
                     </div>
@@ -660,7 +660,7 @@
                             <div class="ticket-stub-line"></div>
                             
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80">
+                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80" id="ticketVideosTitle">
                                     Videos
                                 </span>
                                 <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-brand-dark/10 text-brand-dark">
@@ -669,14 +669,14 @@
                             </div>
 
                             <div class="my-2">
-                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left">
-                                    300+
+                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketTotalVideosVal">
+                                    42
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span>AUTO-INDEXED</span>
-                                <span class="font-mono">ALL CODECS</span>
+                                <span id="ticketVideosSubLeft">AUTO-INDEXED</span>
+                                <span class="font-mono" id="ticketVideosSubRight">ALL MODULES</span>
                             </div>
                         </div>
                     </div>
@@ -687,7 +687,7 @@
                             <div class="ticket-stub-line"></div>
                             
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80">
+                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80" id="ticketDaysTitle">
                                     Target Days
                                 </span>
                                 <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-brand-dark/10 text-brand-dark">
@@ -696,14 +696,14 @@
                             </div>
 
                             <div class="my-2">
-                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left">
-                                    10
+                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketTargetDaysVal">
+                                    14
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span>DYNAMIC SPRINT</span>
-                                <span class="font-mono">ZERO BURNOUT</span>
+                                <span id="ticketDaysSubLeft">DYNAMIC SPRINT</span>
+                                <span class="font-mono" id="ticketDaysSubRight">ZERO BURNOUT</span>
                             </div>
                         </div>
                     </div>
@@ -714,7 +714,7 @@
                             <div class="ticket-stub-line"></div>
                             
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80">
+                                <span class="text-xs font-black uppercase tracking-wider text-brand-dark/80" id="ticketPacingTitle">
                                     Hrs/Day
                                 </span>
                                 <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-brand-dark/10 text-brand-dark">
@@ -723,14 +723,14 @@
                             </div>
 
                             <div class="my-2">
-                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left">
-                                    4.0
+                                <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketDailyHoursVal">
+                                    1.8
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span>SUSTAINED LOAD</span>
-                                <span class="font-mono">CALM PACE</span>
+                                <span id="ticketPacingSubLeft">SUSTAINED LOAD</span>
+                                <span class="font-mono" id="ticketPacingSubRight">CALM PACE</span>
                             </div>
                         </div>
                     </div>
@@ -2715,6 +2715,93 @@
         });
 
         // ---------------------------------------------------------
+        // 4C. SYNCHRONIZE 4 CALIBRATED PACING TICKETS (#metrics)
+        // ---------------------------------------------------------
+        function updateMetricsTicketsUI(course) {
+            if (!course) return;
+
+            const badgeEl = document.getElementById('metricsSectionBadge');
+            const durTitle = document.getElementById('ticketDurationTitle');
+            const durVal = document.getElementById('ticketTotalDurationVal');
+            const durSubLeft = document.getElementById('ticketDurationSubLeft');
+            const durSubRight = document.getElementById('ticketDurationSubRight');
+
+            const vidTitle = document.getElementById('ticketVideosTitle');
+            const vidVal = document.getElementById('ticketTotalVideosVal');
+            const vidSubLeft = document.getElementById('ticketVideosSubLeft');
+            const vidSubRight = document.getElementById('ticketVideosSubRight');
+
+            const daysTitle = document.getElementById('ticketDaysTitle');
+            const daysVal = document.getElementById('ticketTargetDaysVal');
+            const daysSubLeft = document.getElementById('ticketDaysSubLeft');
+            const daysSubRight = document.getElementById('ticketDaysSubRight');
+
+            const paceTitle = document.getElementById('ticketPacingTitle');
+            const paceVal = document.getElementById('ticketDailyHoursVal');
+            const paceSubLeft = document.getElementById('ticketPacingSubLeft');
+            const paceSubRight = document.getElementById('ticketPacingSubRight');
+
+            if (badgeEl) {
+                badgeEl.innerText = `Calibrated Pacing • ${course.shortTitle || course.title.slice(0, 24)}`;
+            }
+
+            // 1. Total Duration
+            if (durVal) {
+                if (course.totalHours >= 1) {
+                    durVal.innerText = `${course.totalHours} Hrs`;
+                } else {
+                    durVal.innerText = `${Math.round(course.totalHours * 60)} Mins`;
+                }
+            }
+            if (durSubLeft) {
+                durSubLeft.innerText = course.isOneShot 
+                    ? '1-SHOT COURSE' 
+                    : (course.shortTitle || 'CURRICULUM').toUpperCase().slice(0, 16);
+            }
+            if (durSubRight) {
+                durSubRight.innerText = 'BALANCED LOAD';
+            }
+
+            // 2. Videos / Chapters
+            if (vidTitle) {
+                vidTitle.innerText = course.isOneShot ? 'Chapters' : 'Videos';
+            }
+            if (vidVal) {
+                vidVal.innerText = `${course.totalVideos}`;
+            }
+            if (vidSubLeft) {
+                vidSubLeft.innerText = course.isOneShot ? 'CHAPTER TIMESTAMPS' : 'AUTO-INDEXED';
+            }
+            if (vidSubRight) {
+                vidSubRight.innerText = course.isOneShot ? 'DIRECT JUMP' : 'ALL LESSONS';
+            }
+
+            // 3. Target Days
+            if (daysVal) {
+                daysVal.innerText = `${course.totalDays}`;
+            }
+            if (daysSubLeft) {
+                const activeD = windowActiveDay || course.activeDayNum || 1;
+                daysSubLeft.innerText = `DAY ${activeD} ACTIVE`;
+            }
+            if (daysSubRight) {
+                daysSubRight.innerText = 'ZERO BURNOUT';
+            }
+
+            // 4. Daily Hours
+            const dailyH = (course.totalHours / Math.max(1, course.totalDays)).toFixed(1);
+            if (paceVal) {
+                paceVal.innerText = `${dailyH}`;
+            }
+            if (paceSubLeft) {
+                paceSubLeft.innerText = 'SUSTAINED LOAD';
+            }
+            if (paceSubRight) {
+                paceSubRight.innerText = 'CALM PACE';
+            }
+        }
+
+        // ---------------------------------------------------------
         // 5. MASTER RENDER ENGINE: RENDERS ANY COURSE DYNAMICALLY
         // ---------------------------------------------------------
         function renderActiveCourse(course, activeDayNum) {
@@ -2728,6 +2815,9 @@
             } catch (e) {
                 console.error(e);
             }
+
+            // Synchronize 4 Calibrated Pacing Tickets (#metrics) with current roadmap
+            updateMetricsTicketsUI(course);
 
             // 1. Update Hero texts & CTA buttons
             const heroDay = document.getElementById('heroDayNum');
