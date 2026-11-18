@@ -1045,7 +1045,7 @@
                 <div class="hidden sm:block h-6 w-[1px] bg-slate-200"></div>
 
                 <!-- Sleek Course Switcher Pill & Dropdown (Spacious Left Alignment) -->
-                <div class="relative shrink-0" id="courseSwitcherContainer">
+                <div class="relative shrink-0 hidden" id="courseSwitcherContainer">
                     <button type="button" id="courseSwitcherBtn" onclick="toggleCourseSwitcherDropdown()" title="Switch Enrolled Course Roadmap"
                             class="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200/90 hover:border-slate-300 text-xs font-bold text-slate-800 transition-all duration-150 max-w-[170px] sm:max-w-[240px] md:max-w-[280px] truncate group focus:outline-none focus:ring-2 focus:ring-brand-green/40 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-brand-green shrink-0 animate-pulse"></span>
@@ -1091,7 +1091,7 @@
                 
                 <!-- Sleek, Clean & Unified Live Progress Pill -->
                 <button id="navProgressBtn" onclick="toggleQuickPassDrawer()" title="View Instant Roadmap Progress (Zero-Scroll)"
-                        class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm hover:border-slate-300 transition-all duration-150 text-left group focus:outline-none focus:ring-2 focus:ring-brand-green/40">
+                        class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm hover:border-slate-300 transition-all duration-150 text-left group focus:outline-none focus:ring-2 focus:ring-brand-green/40 hidden">
                     
                     <!-- Crisp Circular Progress Ring -->
                     <div class="w-4 h-4 shrink-0 flex items-center justify-center">
@@ -1424,7 +1424,7 @@
                 </p>
 
                 <!-- Active Track Chip (Click to Switch) -->
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 hover:bg-white border border-slate-200 shadow-sm backdrop-blur-md mb-8 text-xs text-slate-800 cursor-pointer transition-all hover:border-brand-green/60 hover:scale-[1.01] reveal-item select-none group" onclick="toggleCourseSwitcherDropdown(true)">
+                <div id="heroCourseChip" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 hover:bg-white border border-slate-200 shadow-sm backdrop-blur-md mb-8 text-xs text-slate-800 cursor-pointer transition-all hover:border-brand-green/60 hover:scale-[1.01] reveal-item select-none group hidden" onclick="toggleCourseSwitcherDropdown(true)">
                     <span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
                     <span class="font-medium text-slate-500">Active Track:</span>
                     <strong id="heroCourseBadge" class="font-bold text-slate-900 group-hover:text-brand-dark">Roadmap</strong>
@@ -1440,9 +1440,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
                     </a>
-                    <a href="#today" 
-                       class="w-full sm:w-auto bg-white/90 hover:bg-white text-slate-800 font-bold text-base px-8 py-4 rounded-full border border-slate-200 shadow-sm hover:shadow transition-all duration-200 flex items-center justify-center gap-2">
-                        <span id="heroOpenHubText">Open Today's Hub (Day 12) ↓</span>
+                    <a href="#today" id="heroOpenHubBtn"
+                       class="w-full sm:w-auto bg-white/90 hover:bg-white text-slate-800 font-bold text-base px-8 py-4 rounded-full border border-slate-200 shadow-sm hover:shadow transition-all duration-200 flex items-center justify-center gap-2 hidden">
+                        <span id="heroOpenHubText">Open Today's Hub (Day 1) ↓</span>
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -1450,7 +1450,7 @@
                 </div>
 
                 <!-- ZERO-SCROLL HERO PROGRESS SNAPSHOT (Free, Spacious & Breathable Capsule) -->
-                <div class="mt-10 max-w-3xl lg:max-w-4xl mx-auto bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-full py-3.5 px-5 sm:px-7 border border-slate-200/80 shadow-[0_12px_40px_-15px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-center justify-between gap-4 text-left reveal-item hover:border-brand-green/50 hover:shadow-lg transition-all duration-300">
+                <div id="heroProgressCapsule" class="mt-10 max-w-3xl lg:max-w-4xl mx-auto bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-full py-3.5 px-5 sm:px-7 border border-slate-200/80 shadow-[0_12px_40px_-15px_rgba(0,0,0,0.08)] flex flex-col md:flex-row items-center justify-between gap-4 text-left reveal-item hover:border-brand-green/50 hover:shadow-lg transition-all duration-300 hidden">
                     
                     <!-- Left: Day Pill & Progress Status -->
                     <div class="flex items-center gap-3 w-full md:w-auto shrink-0">
@@ -1664,7 +1664,7 @@
              - What is my progress
              - Instant active video actions
         ============================================================= -->
-        <section id="today" class="py-20 md:py-28 relative z-10 bg-gradient-to-b from-white via-slate-50/70 to-white">
+        <section id="today" class="py-20 md:py-28 relative z-10 bg-gradient-to-b from-white via-slate-50/70 to-white hidden">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <!-- Section Header -->
@@ -1804,7 +1804,7 @@
              - Real-time deficit counter and pacing rebalance engine
              - Zero-cloud local persistence
         ============================================================= -->
-        <section id="backlog" class="py-20 md:py-28 relative z-10 bg-slate-50/75 border-t border-slate-200/80">
+        <section id="backlog" class="py-20 md:py-28 relative z-10 bg-slate-50/75 border-t border-slate-200/80 hidden">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <!-- Section Header -->
@@ -2386,7 +2386,7 @@
          - 1-click dismiss button
     ============================================================= -->
     <aside id="floatingHud" aria-label="Quick Roadmap HUD" 
-           class="fixed bottom-5 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 z-40 transition-all duration-300 ease-out select-none">
+           class="fixed bottom-5 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 z-40 transition-all duration-300 ease-out select-none hidden">
         <div class="bg-brand-dark/95 backdrop-blur-2xl text-white rounded-full p-1.5 pl-3.5 pr-2 border border-white/20 shadow-[0_15px_40px_rgba(0,0,0,0.35)] flex items-center justify-between gap-2 sm:gap-4 max-w-xl mx-auto ring-1 ring-white/10">
             
             <!-- Live Ring & Current Task -->
@@ -3706,18 +3706,21 @@
         function deleteEnrolledCourse(courseId, event) {
             if (event) event.stopPropagation();
             const courses = getAllEnrolledCourses();
-            if (courses.length <= 1) {
-                showToastNotification('Cannot Delete', 'You need at least one enrolled roadmap.');
-                return;
-            }
-
             const updatedCourses = courses.filter(c => c.id !== courseId);
             saveEnrolledCoursesList(updatedCourses);
             localStorage.removeItem(`m2l_completed_${courseId}`);
 
             if (windowActiveCourse && windowActiveCourse.id === courseId) {
-                const nextCourse = updatedCourses[0];
-                switchCourse(nextCourse.id);
+                if (updatedCourses.length > 0) {
+                    const nextCourse = updatedCourses[0];
+                    switchCourse(nextCourse.id);
+                } else {
+                    localStorage.removeItem(STORAGE_ACTIVE_COURSE);
+                    localStorage.removeItem(STORAGE_ACTIVE_COURSE_ID);
+                    localStorage.removeItem(STORAGE_ACTIVE_DAY);
+                    localStorage.removeItem(STORAGE_COMPLETED);
+                    renderEmptyState();
+                }
             } else {
                 renderCourseSwitcherUI();
             }
@@ -3730,7 +3733,21 @@
             const heroBadge = document.getElementById('heroCourseBadge');
             const listEl = document.getElementById('courseSwitcherList');
             const mobileListEl = document.getElementById('mobileCourseSwitcherList');
-            if (!windowActiveCourse) return;
+            const courseSwitcherContainer = document.getElementById('courseSwitcherContainer');
+            const heroCourseChip = document.getElementById('heroCourseChip');
+
+            if (!windowActiveCourse) {
+                if (btnTitle) btnTitle.innerText = 'No Active Track';
+                if (heroBadge) heroBadge.innerText = 'No Active Track';
+                if (courseSwitcherContainer) courseSwitcherContainer.classList.add('hidden');
+                if (heroCourseChip) heroCourseChip.classList.add('hidden');
+                if (listEl) listEl.innerHTML = '<div class="text-xs text-slate-400 p-2 text-center">No enrolled roadmaps yet.</div>';
+                if (mobileListEl) mobileListEl.innerHTML = '<div class="text-xs text-slate-400 p-2 text-center">No enrolled roadmaps yet.</div>';
+                return;
+            }
+
+            if (courseSwitcherContainer) courseSwitcherContainer.classList.remove('hidden');
+            if (heroCourseChip) heroCourseChip.classList.remove('hidden');
 
             const displayTitle = windowActiveCourse.shortTitle || windowActiveCourse.title.slice(0, 20);
             if (btnTitle) btnTitle.innerText = displayTitle;
@@ -3878,7 +3895,10 @@
         // 5. MASTER RENDER ENGINE: RENDERS ANY COURSE DYNAMICALLY
         // ---------------------------------------------------------
         function renderActiveCourse(course, activeDayNum) {
-            if (!course) return;
+            if (!course) {
+                renderEmptyState();
+                return;
+            }
             windowActiveCourse = course;
             windowActiveDay = activeDayNum || course.activeDayNum || 1;
 
@@ -3888,6 +3908,31 @@
             } catch (e) {
                 console.error(e);
             }
+
+            // Unhide roadmap sections & controls
+            const todaySec = document.getElementById('today');
+            if (todaySec) todaySec.classList.remove('hidden');
+
+            const backlogSec = document.getElementById('backlog');
+            if (backlogSec) backlogSec.classList.remove('hidden');
+
+            const heroCapsule = document.getElementById('heroProgressCapsule');
+            if (heroCapsule) heroCapsule.classList.remove('hidden');
+
+            const heroOpenBtn = document.getElementById('heroOpenHubBtn');
+            if (heroOpenBtn) heroOpenBtn.classList.remove('hidden');
+
+            const heroChip = document.getElementById('heroCourseChip');
+            if (heroChip) heroChip.classList.remove('hidden');
+
+            const navProgressBtn = document.getElementById('navProgressBtn');
+            if (navProgressBtn) navProgressBtn.classList.remove('hidden');
+
+            const courseSwitcherContainer = document.getElementById('courseSwitcherContainer');
+            if (courseSwitcherContainer) courseSwitcherContainer.classList.remove('hidden');
+
+            const hud = document.getElementById('floatingHud');
+            if (hud) hud.classList.remove('hidden');
 
             // Synchronize 4 Calibrated Pacing Tickets (#metrics) with current roadmap
             updateMetricsTicketsUI(course);
@@ -4351,7 +4396,8 @@
         // 7. MASTER PROGRESS RECALCULATION ENGINE
         // ---------------------------------------------------------
         function updateAllProgress() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             const currentDayNum = windowActiveDay || course.activeDayNum || 1;
 
             let totalVideos = 0;
@@ -4549,7 +4595,8 @@
         // 8. BACKLOG & DEBT RECOVERY ENGINE
         // ---------------------------------------------------------
         function updateBacklogEngine() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             const currentDayNum = windowActiveDay || course.activeDayNum || 1;
             const backlogItems = [];
             let totalDeficitMins = 0;
@@ -4724,7 +4771,8 @@
         }
 
         function toggleBacklogSimulation() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             const pastDay = course.days.find(d => d.dayNum < windowActiveDay);
             if (pastDay && pastDay.videos[0]) {
                 const v = pastDay.videos[0];
@@ -4740,7 +4788,8 @@
         }
 
         function clearAllBacklog() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             course.days.forEach(day => {
                 if (day.dayNum < windowActiveDay) {
                     day.videos.forEach(v => {
@@ -5078,6 +5127,7 @@
             }
 
             if (key === 'demo') {
+                localStorage.setItem('m2l_user_chose_demo', 'true');
                 const demoCourse = JSON.parse(JSON.stringify(CURRICULUM_TEMPLATES.demo));
                 const demoCompleted = ['demo_d11_v1', 'demo_d11_v2', 'demo_d11_v3', 'demo_d12_v1'];
                 enrollOrUpdateCourse(demoCourse, true);
@@ -5099,7 +5149,8 @@
         }
 
         function setTestDay(dayNum) {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             windowActiveDay = dayNum;
             try {
                 localStorage.setItem(STORAGE_ACTIVE_DAY, dayNum.toString());
@@ -5121,7 +5172,8 @@
         }
 
         function markCurrentVideoDone() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             for (let day of course.days) {
                 for (let v of day.videos) {
                     const cb = document.getElementById(`main_${v.id}`);
@@ -5141,7 +5193,8 @@
         }
 
         function jumpToActiveVideo() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             for (let day of course.days) {
                 for (let v of day.videos) {
                     const cb = document.getElementById(`main_${v.id}`);
@@ -5246,7 +5299,8 @@
         }
 
         function simulateNextDay() {
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
+            if (!course) return;
             const nextDay = Math.min(course.totalDays, (windowActiveDay || 1) + 1);
             setTestDay(nextDay);
             showToastNotification('Daily Rollover Simulated', `Calendar advanced: Day ${nextDay} is now your active study day.`);
@@ -5368,57 +5422,122 @@
         }
 
         // ---------------------------------------------------------
-        // 10. MASTER SYSTEM INITIALIZATION
+        // 10. MASTER SYSTEM INITIALIZATION & EMPTY STATE ENGINE
         // ---------------------------------------------------------
+        function renderEmptyState() {
+            windowActiveCourse = null;
+            windowActiveDay = 1;
+
+            // Hide active roadmap sections & HUD on first load
+            const todaySec = document.getElementById('today');
+            if (todaySec) todaySec.classList.add('hidden');
+
+            const backlogSec = document.getElementById('backlog');
+            if (backlogSec) backlogSec.classList.add('hidden');
+
+            const heroCapsule = document.getElementById('heroProgressCapsule');
+            if (heroCapsule) heroCapsule.classList.add('hidden');
+
+            const heroOpenBtn = document.getElementById('heroOpenHubBtn');
+            if (heroOpenBtn) heroOpenBtn.classList.add('hidden');
+
+            const heroChip = document.getElementById('heroCourseChip');
+            if (heroChip) heroChip.classList.add('hidden');
+
+            const navProgressBtn = document.getElementById('navProgressBtn');
+            if (navProgressBtn) navProgressBtn.classList.add('hidden');
+
+            const courseSwitcherContainer = document.getElementById('courseSwitcherContainer');
+            if (courseSwitcherContainer) courseSwitcherContainer.classList.add('hidden');
+
+            const hud = document.getElementById('floatingHud');
+            if (hud) hud.classList.add('hidden');
+
+            const orb = document.getElementById('hudMiniOrb');
+            if (orb) orb.classList.add('hidden');
+
+            const todayActiveContainer = document.getElementById('todayActiveCardContainer');
+            if (todayActiveContainer) todayActiveContainer.innerHTML = '';
+
+            const fullRoadmapContainer = document.getElementById('fullRoadmapContainer');
+            if (fullRoadmapContainer) fullRoadmapContainer.innerHTML = '';
+
+            const drawerDaysContainer = document.getElementById('drawerDaysContainer');
+            if (drawerDaysContainer) drawerDaysContainer.innerHTML = '';
+        }
+
         function initUniversalEngine() {
+            // Clean up any unchosen legacy demo data in localStorage
+            const savedCourseId = localStorage.getItem(STORAGE_ACTIVE_COURSE_ID);
+            const userChoseDemo = localStorage.getItem('m2l_user_chose_demo');
+            if (savedCourseId === 'demo' && !userChoseDemo) {
+                localStorage.removeItem(STORAGE_ACTIVE_COURSE);
+                localStorage.removeItem(STORAGE_ACTIVE_COURSE_ID);
+                localStorage.removeItem(STORAGE_ACTIVE_DAY);
+                localStorage.removeItem(STORAGE_COMPLETED);
+                const courses = getAllEnrolledCourses().filter(c => c.id !== 'demo');
+                saveEnrolledCoursesList(courses);
+            }
+
             let activeCourse = null;
-            let activeDay = 12;
+            let activeDay = 1;
 
             const enrolled = getAllEnrolledCourses();
-            const savedCourseId = localStorage.getItem(STORAGE_ACTIVE_COURSE_ID);
+            const currentSavedId = localStorage.getItem(STORAGE_ACTIVE_COURSE_ID);
 
-            if (savedCourseId && enrolled.length > 0) {
-                const found = enrolled.find(c => c.id === savedCourseId);
+            if (currentSavedId && enrolled.length > 0) {
+                const found = enrolled.find(c => c.id === currentSavedId);
                 if (found && found.data) {
                     activeCourse = found.data;
                     activeDay = found.activeDayNum || activeCourse.activeDayNum || 1;
                 }
             }
 
+            if (!activeCourse && enrolled.length > 0) {
+                activeCourse = enrolled[0].data;
+                activeDay = enrolled[0].activeDayNum || 1;
+            }
+
             if (!activeCourse) {
                 try {
                     const savedCourse = localStorage.getItem(STORAGE_ACTIVE_COURSE);
                     if (savedCourse) {
-                        activeCourse = JSON.parse(savedCourse);
+                        const parsed = JSON.parse(savedCourse);
+                        if (parsed && (parsed.id !== 'demo' || userChoseDemo)) {
+                            activeCourse = parsed;
+                        }
                     }
                     const savedDay = localStorage.getItem(STORAGE_ACTIVE_DAY);
-                    if (savedDay) {
-                        activeDay = parseInt(savedDay) || (activeCourse ? activeCourse.activeDayNum : 12);
+                    if (savedDay && activeCourse) {
+                        activeDay = parseInt(savedDay) || activeCourse.activeDayNum || 1;
                     }
                 } catch (e) {
                     console.error('Error loading saved course:', e);
                 }
             }
 
-            if (!activeCourse) {
-                activeCourse = JSON.parse(JSON.stringify(CURRICULUM_TEMPLATES.demo));
-                activeDay = 12;
-                if (!localStorage.getItem(STORAGE_COMPLETED)) {
-                    const demoCompleted = ['demo_d11_v1', 'demo_d11_v2', 'demo_d11_v3', 'demo_d12_v1'];
-                    localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(demoCompleted));
-                    saveCourseCompletedList(activeCourse.id, demoCompleted);
-                }
+            // Fresh visitor: Show nothing (clean empty state) until a course is loaded/generated
+            if (activeCourse) {
+                enrollOrUpdateCourse(activeCourse, true);
+                const activeCompleted = getCourseCompletedList(activeCourse.id);
+                localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(activeCompleted));
+                renderActiveCourse(activeCourse, activeDay);
+                initSmartHud();
+            } else {
+                renderEmptyState();
             }
 
-            // Ensure activeCourse is enrolled in multi-course storage
-            enrollOrUpdateCourse(activeCourse, true);
+            // Guide nav links to generator when no course exists
+            document.querySelectorAll('a[href="#today"], a[href="#backlog"]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!windowActiveCourse) {
+                        e.preventDefault();
+                        const cta = document.getElementById('cta');
+                        if (cta) cta.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
 
-            // Load progress for activeCourse
-            const activeCompleted = getCourseCompletedList(activeCourse.id);
-            localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(activeCompleted));
-
-            renderActiveCourse(activeCourse, activeDay);
-            initSmartHud();
             recalculatePacing();
             renderCourseSwitcherUI();
             initTheme();
