@@ -689,73 +689,9 @@
         }
 
         /* =============================================================
-           CELESTIAL HORIZON BEAM & COSMIC FLARE TRANSITION (120 FPS)
-           Zero-blocking, pure GPU translate3d, 0ms input latency
+           CELESTIAL COSMIC PULSE TRANSITION (120 FPS)
+           Zero-blocking, pure GPU composite, 0ms input latency
         ============================================================= */
-
-        .celestial-horizon-beam {
-            display: none;
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 3px;
-            z-index: 99999;
-            pointer-events: none;
-            will-change: transform, opacity;
-            transform: translate3d(0, -50px, 0);
-        }
-
-        .celestial-beam-core {
-            position: absolute;
-            inset: 0;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(32, 222, 107, 0.4) 15%, 
-                #20DE6B 45%, 
-                #FFFFFF 50%, 
-                #20DE6B 55%, 
-                rgba(32, 222, 107, 0.4) 85%, 
-                transparent 100%
-            );
-            box-shadow: 
-                0 0 16px 4px rgba(32, 222, 107, 0.95),
-                0 0 36px 8px rgba(56, 189, 248, 0.65),
-                0 0 70px 18px rgba(32, 222, 107, 0.35);
-        }
-
-        .celestial-beam-flare {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 320px;
-            height: 70px;
-            transform: translate3d(-50%, -50%, 0);
-            border-radius: 50%;
-            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(32, 222, 107, 0.55) 40%, transparent 75%);
-            pointer-events: none;
-        }
-
-        /* Daylight Solar Variant for Beam */
-        .celestial-horizon-beam.beam-solar .celestial-beam-core {
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(255, 180, 20, 0.4) 15%, 
-                #FFC107 45%, 
-                #FFFFFF 50%, 
-                #FFC107 55%, 
-                rgba(255, 180, 20, 0.4) 85%, 
-                transparent 100%
-            );
-            box-shadow: 
-                0 0 16px 4px rgba(255, 215, 64, 0.95),
-                0 0 36px 8px rgba(255, 150, 0, 0.7),
-                0 0 70px 18px rgba(255, 200, 50, 0.4);
-        }
-        .celestial-horizon-beam.beam-solar .celestial-beam-flare {
-            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.98) 0%, rgba(255, 215, 64, 0.65) 40%, transparent 75%);
-        }
 
         /* Celestial Pulse Wave around the Sun / Moon on click */
         .celestial-pulse-wave {
@@ -916,15 +852,6 @@
     </style>
 </head>
 <body class="relative min-h-screen">
-
-    <!-- =============================================================
-         CELESTIAL HORIZON BEAM & COSMIC SHOCKWAVE SYSTEM
-         Zero-blocking, ultra-fast 120 FPS hardware beam sweep
-    ============================================================= -->
-    <div id="celestialHorizonBeam" class="celestial-horizon-beam" aria-hidden="true">
-        <div class="celestial-beam-core"></div>
-        <div class="celestial-beam-flare"></div>
-    </div>
 
     <!-- =============================================================
          GLOBAL SERENE LANDSCAPE BACKGROUND (Mountains, Lake, Sky)
@@ -5365,19 +5292,18 @@
                 localStorage.setItem(STORAGE_THEME, newIsDark ? 'dark' : 'light');
             } catch (e) {}
 
-            // 2. Fire the 120 FPS Celestial Horizon Beam & Cosmic Shockwave
-            triggerCelestialHorizonTransition(newIsDark);
+            // 2. Trigger celestial pulse & eclipse animation
+            triggerCelestialPulse(newIsDark);
         }
 
-        function triggerCelestialHorizonTransition(newIsDark) {
-            const beam = document.getElementById('celestialHorizonBeam');
+        function triggerCelestialPulse(newIsDark) {
             const celestialBody = document.getElementById('celestialBody');
             const pulseWave = document.getElementById('celestialPulseWave');
 
             isThemeTransitioning = true;
             setTimeout(() => { isThemeTransitioning = false; }, 420);
 
-            // A. Cosmic Shockwave Pulse around Celestial Sun/Moon
+            // Cosmic Shockwave Pulse around Celestial Sun/Moon
             if (celestialBody) {
                 celestialBody.classList.remove('theme-solar-pulse');
                 if (!newIsDark) {
@@ -5399,42 +5325,6 @@
                     easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
                     fill: 'forwards'
                 });
-            }
-
-            // B. Celestial Horizon Beam: Sweeps down across the viewport
-            if (beam && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-                if (newIsDark) {
-                    beam.classList.remove('beam-solar');
-                } else {
-                    beam.classList.add('beam-solar');
-                }
-
-                // Determine start position of beam
-                const scrollY = window.scrollY || window.pageYOffset || 0;
-                let startY = 0;
-                if (scrollY < 300) {
-                    const anchor = document.getElementById('celestialAnchor');
-                    if (anchor) {
-                        const rect = anchor.getBoundingClientRect();
-                        startY = Math.max(0, rect.top + rect.height * 0.35);
-                    }
-                }
-
-                beam.style.display = 'block';
-
-                const beamAnim = beam.animate([
-                    { transform: `translate3d(0, ${startY}px, 0)`, opacity: 1 },
-                    { transform: `translate3d(0, ${window.innerHeight + 30}px, 0)`, opacity: 0.9 }
-                ], {
-                    duration: 380,
-                    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                    fill: 'forwards'
-                });
-
-                beamAnim.onfinish = () => {
-                    beam.style.display = 'none';
-                    beam.style.transform = 'translate3d(0, -50px, 0)';
-                };
             }
         }
 
