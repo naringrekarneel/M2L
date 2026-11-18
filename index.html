@@ -1559,14 +1559,14 @@
                             <!-- Massive Bold Number -->
                             <div class="my-2">
                                 <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketTotalDurationVal">
-                                    24.5 Hrs
+                                    0 Hrs
                                 </span>
                             </div>
 
                             <!-- Ticket Subtext Stub -->
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span id="ticketDurationSubLeft">SAMPLE COURSE</span>
-                                <span class="font-mono" id="ticketDurationSubRight">BALANCED LOAD</span>
+                                <span id="ticketDurationSubLeft">NO PLAYLIST</span>
+                                <span class="font-mono" id="ticketDurationSubRight">STANDBY</span>
                             </div>
                         </div>
                     </div>
@@ -1587,13 +1587,13 @@
 
                             <div class="my-2">
                                 <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketTotalVideosVal">
-                                    42
+                                    0
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span id="ticketVideosSubLeft">AUTO-INDEXED</span>
-                                <span class="font-mono" id="ticketVideosSubRight">ALL MODULES</span>
+                                <span id="ticketVideosSubLeft">NO VIDEOS</span>
+                                <span class="font-mono" id="ticketVideosSubRight">READY</span>
                             </div>
                         </div>
                     </div>
@@ -1614,12 +1614,12 @@
 
                             <div class="my-2">
                                 <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketTargetDaysVal">
-                                    14
+                                    0
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span id="ticketDaysSubLeft">DYNAMIC SPRINT</span>
+                                <span id="ticketDaysSubLeft">0 DAYS</span>
                                 <span class="font-mono" id="ticketDaysSubRight">ZERO BURNOUT</span>
                             </div>
                         </div>
@@ -1641,12 +1641,12 @@
 
                             <div class="my-2">
                                 <span class="text-4xl sm:text-5xl xl:text-6xl font-black text-brand-dark tracking-tight leading-none block group-hover:scale-[1.03] transition-transform origin-left" id="ticketDailyHoursVal">
-                                    1.8
+                                    0.0
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between pt-2 border-t border-brand-dark/15 text-[11px] font-bold text-brand-dark/70">
-                                <span id="ticketPacingSubLeft">SUSTAINED LOAD</span>
+                                <span id="ticketPacingSubLeft">ZERO LOAD</span>
                                 <span class="font-mono" id="ticketPacingSubRight">CALM PACE</span>
                             </div>
                         </div>
@@ -2065,7 +2065,7 @@
                                     <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                                     Calculated Pacing:
                                 </span>
-                                    <span id="insightDaysText">~1h 45m daily study required (3.0 videos / day)</span>
+                                    <span id="insightDaysText">Calibrates automatically upon entering playlist</span>
                                 </span>
                                 <span class="text-[10px] font-mono text-brand-green bg-brand-green/20 px-2 py-0.5 rounded-full">CALIBRATED</span>
                             </div>
@@ -2108,7 +2108,7 @@
                                     <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                                     Calculated Timeline:
                                 </span>
-                                    <span id="insightHoursText">~16 Days to complete all 42 modules (2.6 videos / day)</span>
+                                    <span id="insightHoursText">Calibrates automatically upon entering playlist</span>
                                 </span>
                                 <span class="text-[10px] font-mono text-brand-green bg-brand-green/20 px-2 py-0.5 rounded-full">CALIBRATED</span>
                             </div>
@@ -3808,8 +3808,6 @@
         // 4C. SYNCHRONIZE 4 CALIBRATED PACING TICKETS (#metrics)
         // ---------------------------------------------------------
         function updateMetricsTicketsUI(course) {
-            if (!course) return;
-
             const badgeEl = document.getElementById('metricsSectionBadge');
             const durTitle = document.getElementById('ticketDurationTitle');
             const durVal = document.getElementById('ticketTotalDurationVal');
@@ -3830,6 +3828,30 @@
             const paceVal = document.getElementById('ticketDailyHoursVal');
             const paceSubLeft = document.getElementById('ticketPacingSubLeft');
             const paceSubRight = document.getElementById('ticketPacingSubRight');
+
+            if (!course) {
+                if (badgeEl) badgeEl.innerText = 'Calibrated Daily Pacing';
+                if (durTitle) durTitle.innerText = 'Total Duration';
+                if (durVal) durVal.innerText = '0 Hrs';
+                if (durSubLeft) durSubLeft.innerText = 'NO PLAYLIST';
+                if (durSubRight) durSubRight.innerText = 'STANDBY';
+
+                if (vidTitle) vidTitle.innerText = 'Videos';
+                if (vidVal) vidVal.innerText = '0';
+                if (vidSubLeft) vidSubLeft.innerText = 'NO VIDEOS';
+                if (vidSubRight) vidSubRight.innerText = 'READY';
+
+                if (daysTitle) daysTitle.innerText = 'Target Days';
+                if (daysVal) daysVal.innerText = '0';
+                if (daysSubLeft) daysSubLeft.innerText = '0 DAYS';
+                if (daysSubRight) daysSubRight.innerText = 'ZERO BURNOUT';
+
+                if (paceTitle) paceTitle.innerText = 'Hrs/Day';
+                if (paceVal) paceVal.innerText = '0.0';
+                if (paceSubLeft) paceSubLeft.innerText = 'ZERO LOAD';
+                if (paceSubRight) paceSubRight.innerText = 'CALM PACE';
+                return;
+            }
 
             if (badgeEl) {
                 badgeEl.innerText = `Calibrated Pacing • ${course.shortTitle || course.title.slice(0, 24)}`;
@@ -4915,10 +4937,20 @@
             const hoursInput = document.getElementById('dailyHours');
             const insightDays = document.getElementById('insightDaysText');
             const insightHours = document.getElementById('insightHoursText');
-            const course = windowActiveCourse || CURRICULUM_TEMPLATES.demo;
+            const course = windowActiveCourse;
 
-            const totalH = course.totalHours || 24.5;
-            const totalV = course.totalVideos || 42;
+            if (!course) {
+                if (insightDays) {
+                    insightDays.innerText = 'Calibrates automatically upon entering playlist';
+                }
+                if (insightHours) {
+                    insightHours.innerText = 'Calibrates automatically upon entering playlist';
+                }
+                return;
+            }
+
+            const totalH = course.totalHours || 0;
+            const totalV = course.totalVideos || 0;
 
             if (currentGeneratorMode === 'days') {
                 const days = parseInt(daysInput ? daysInput.value : 14) || 14;
@@ -5428,6 +5460,9 @@
             windowActiveCourse = null;
             windowActiveDay = 1;
 
+            // Reset 4 Calibrated Pacing Tickets to 0 on initial launch
+            updateMetricsTicketsUI(null);
+
             // Hide active roadmap sections & HUD on first load
             const todaySec = document.getElementById('today');
             if (todaySec) todaySec.classList.add('hidden');
@@ -5468,21 +5503,30 @@
 
         function initUniversalEngine() {
             // Clean up any unchosen legacy demo data in localStorage
-            const savedCourseId = localStorage.getItem(STORAGE_ACTIVE_COURSE_ID);
             const userChoseDemo = localStorage.getItem('m2l_user_chose_demo');
-            if (savedCourseId === 'demo' && !userChoseDemo) {
-                localStorage.removeItem(STORAGE_ACTIVE_COURSE);
-                localStorage.removeItem(STORAGE_ACTIVE_COURSE_ID);
-                localStorage.removeItem(STORAGE_ACTIVE_DAY);
-                localStorage.removeItem(STORAGE_COMPLETED);
-                const courses = getAllEnrolledCourses().filter(c => c.id !== 'demo');
-                saveEnrolledCoursesList(courses);
+            if (!userChoseDemo) {
+                if (localStorage.getItem(STORAGE_ACTIVE_COURSE_ID) === 'demo') {
+                    localStorage.removeItem(STORAGE_ACTIVE_COURSE_ID);
+                }
+                try {
+                    const savedCourse = localStorage.getItem(STORAGE_ACTIVE_COURSE);
+                    if (savedCourse) {
+                        const parsed = JSON.parse(savedCourse);
+                        if (parsed && parsed.id === 'demo') {
+                            localStorage.removeItem(STORAGE_ACTIVE_COURSE);
+                            localStorage.removeItem(STORAGE_ACTIVE_DAY);
+                            localStorage.removeItem(STORAGE_COMPLETED);
+                        }
+                    }
+                } catch (e) {}
+                const sanitizedCourses = getAllEnrolledCourses().filter(c => c.id !== 'demo');
+                saveEnrolledCoursesList(sanitizedCourses);
             }
 
             let activeCourse = null;
             let activeDay = 1;
 
-            const enrolled = getAllEnrolledCourses();
+            const enrolled = getAllEnrolledCourses().filter(c => c.id !== 'demo' || userChoseDemo);
             const currentSavedId = localStorage.getItem(STORAGE_ACTIVE_COURSE_ID);
 
             if (currentSavedId && enrolled.length > 0) {
