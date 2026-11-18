@@ -16,10 +16,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700;1,800&family=Inter:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@1,6..72,500;1,6..72,600&display=swap" rel="stylesheet">
 
+    <!-- Immediate Theme State Detection (Prevents FOUC on Reload) -->
+    <script>
+        (function() {
+            try {
+                var saved = localStorage.getItem('m2l_theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (saved === 'dark' || (!saved && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -79,6 +95,192 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* =============================================================
+           DARK MODE MASTER ENGINE
+           Ultra-premium Agentix Midnight & Carbon Architecture
+        ============================================================= */
+        html.dark {
+            color-scheme: dark;
+        }
+
+        html.dark body {
+            background-color: #080C14;
+            color: #F8FAFC;
+        }
+
+        /* Dark mode scrollbars */
+        html.dark ::-webkit-scrollbar-track {
+            background: #080C14;
+        }
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-color: #080C14;
+        }
+        html.dark ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Surface adaptations for cards, containers & sections */
+        html.dark .bg-white {
+            background-color: #0D131C;
+        }
+        html.dark .bg-white\/95 {
+            background-color: rgba(13, 19, 28, 0.95);
+        }
+        html.dark .bg-white\/90 {
+            background-color: rgba(13, 19, 28, 0.90);
+        }
+        html.dark .bg-white\/80 {
+            background-color: rgba(13, 19, 28, 0.80);
+        }
+        html.dark .bg-white\/40 {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        html.dark .bg-slate-50,
+        html.dark .bg-slate-50\/70,
+        html.dark .bg-slate-50\/75,
+        html.dark .bg-slate-50\/80,
+        html.dark .bg-slate-50\/90 {
+            background-color: #090E17;
+        }
+        html.dark .bg-slate-100,
+        html.dark .bg-slate-100\/80 {
+            background-color: #121A26;
+        }
+        html.dark .bg-slate-200,
+        html.dark .bg-slate-200\/80,
+        html.dark .bg-slate-200\/90 {
+            background-color: #1A2433;
+        }
+
+        /* Border adaptations */
+        html.dark .border-slate-100,
+        html.dark .border-slate-200,
+        html.dark .border-slate-200\/70,
+        html.dark .border-slate-200\/80,
+        html.dark .border-slate-200\/90 {
+            border-color: #1B2636;
+        }
+
+        /* Typography adaptations */
+        html.dark .text-brand-dark {
+            color: #FFFFFF;
+        }
+        html.dark .text-slate-900 {
+            color: #F8FAFC;
+        }
+        html.dark .text-slate-800 {
+            color: #E2E8F0;
+        }
+        html.dark .text-slate-700 {
+            color: #CBD5E1;
+        }
+        html.dark .text-slate-600 {
+            color: #94A3B8;
+        }
+        html.dark .text-slate-500 {
+            color: #8393A7;
+        }
+        html.dark .text-slate-400 {
+            color: #64748B;
+        }
+
+        /* Inputs, Selects & Forms in Dark Mode */
+        html.dark input[type="text"],
+        html.dark input[type="number"],
+        html.dark input[type="url"],
+        html.dark textarea,
+        html.dark select {
+            background-color: #0B1017 !important;
+            color: #F8FAFC !important;
+            border-color: #1E2B3E !important;
+        }
+        html.dark input::placeholder,
+        html.dark textarea::placeholder {
+            color: #4A5B70 !important;
+        }
+
+        /* Dark mode interactive checkboxes */
+        html.dark .video-checkbox {
+            background-color: #0F1722;
+            border-color: #27374D;
+        }
+        html.dark .video-checkbox:checked {
+            background-color: #20DE6B;
+            border-color: #20DE6B;
+        }
+        html.dark .video-checkbox:checked::after {
+            border-color: #080C14;
+        }
+
+        /* Hover & Interactive States */
+        html.dark .hover\:bg-slate-50:hover,
+        html.dark .hover\:bg-slate-100:hover,
+        html.dark .hover\:bg-slate-100\/80:hover {
+            background-color: #15202E;
+        }
+        html.dark .hover\:border-slate-300:hover {
+            border-color: #2A3B52;
+        }
+
+        /* Header in Dark Mode */
+        html.dark #mainHeader {
+            background-color: rgba(8, 12, 20, 0.94);
+            border-color: #141C28;
+        }
+
+        /* Dropdowns, Drawers & Popovers */
+        html.dark #courseSwitcherDropdown,
+        html.dark #quickPassDrawer,
+        html.dark #mobileDrawer {
+            background-color: rgba(9, 14, 21, 0.98);
+            border-color: #1B2636;
+            color: #F8FAFC;
+        }
+
+        /* Section Backgrounds */
+        html.dark #today {
+            background: linear-gradient(to bottom, #080C14, #0A0F18 50%, #080C14);
+        }
+        html.dark #backlog {
+            background-color: #070B12;
+            border-color: #151F2D;
+        }
+        html.dark #creator-note {
+            background: linear-gradient(to bottom, #080C14, #090E17 50%, #080C14);
+        }
+
+        /* Subtle glows and ticket shadow adaptation */
+        html.dark .ticket-wrapper {
+            filter: drop-shadow(0 12px 28px rgba(32, 222, 107, 0.35));
+        }
+        html.dark .ticket-wrapper:hover {
+            filter: drop-shadow(0 18px 36px rgba(32, 222, 107, 0.50));
+        }
+        html.dark .shadow-sm,
+        html.dark .shadow-md,
+        html.dark .shadow-xl {
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Creator Note large decorative quotes watermark */
+        html.dark #creator-note .font-serif.text-\[130px\] {
+            color: #121A26;
+        }
+
+        /* High-contrast preservation on bright neon green elements */
+        html.dark .ticket-cutout,
+        html.dark .ticket-cutout *,
+        html.dark footer.bg-brand-green,
+        html.dark footer.bg-brand-green * {
+            color: #080C14 !important;
+        }
+        html.dark .bg-brand-green.text-brand-dark,
+        html.dark .bg-brand-green .text-brand-dark {
+            color: #080C14 !important;
         }
 
         /* -------------------------------------------------------------
@@ -214,10 +416,10 @@
         <div class="relative w-full h-[1650px] md:h-[1850px]">
             
             <!-- Atmospheric Sky Gradient Base -->
-            <div class="absolute inset-0 bg-gradient-to-b from-[#FFFFFF] via-[#E8F4FC] to-[#D5EBF8]"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#FFFFFF] via-[#E8F4FC] to-[#D5EBF8] dark:from-[#080C14] dark:via-[#0B101A] dark:to-[#0D1522]"></div>
 
             <!-- Photorealistic Serene Alpine Mountain & Lake Artwork Layer -->
-            <div class="absolute inset-0 opacity-80 mix-blend-multiply bg-center bg-cover bg-no-repeat transition-opacity duration-1000"
+            <div class="absolute inset-0 opacity-80 mix-blend-multiply dark:mix-blend-luminosity dark:opacity-20 bg-center bg-cover bg-no-repeat transition-opacity duration-1000"
                  style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2560&q=85');">
             </div>
 
@@ -271,10 +473,10 @@
 
             <!-- CRITICAL: Pure White Top Gradient Fade -->
             <!-- The header rests on pure white and gently reveals the landscape below -->
-            <div class="absolute inset-0 bg-gradient-to-b from-[#FFFFFF] via-[#FFFFFF]/85 to-transparent h-[520px] pointer-events-none"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#FFFFFF] via-[#FFFFFF]/85 to-transparent dark:from-[#080C14] dark:via-[#080C14]/90 dark:to-transparent h-[520px] pointer-events-none"></div>
             
             <!-- Bottom blend into page content -->
-            <div class="absolute inset-x-0 bottom-0 h-[280px] bg-gradient-to-t from-[#FFFFFF] to-transparent pointer-events-none"></div>
+            <div class="absolute inset-x-0 bottom-0 h-[280px] bg-gradient-to-t from-[#FFFFFF] dark:from-[#080C14] to-transparent pointer-events-none"></div>
         </div>
     </div>
 
@@ -380,6 +582,19 @@
                     </svg>
                 </button>
 
+                <!-- Sleek Dark / Light Mode Toggle Button -->
+                <button type="button" onclick="toggleTheme()" class="theme-toggle-btn w-9 h-9 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-200/90 text-slate-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-green/40 shadow-sm shrink-0" title="Toggle Dark / Light Mode" aria-label="Toggle Dark / Light Mode">
+                    <!-- Sun Icon (Active in Dark Mode to switch to Light) -->
+                    <svg class="theme-icon-sun w-4 h-4 text-brand-green hidden transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="4" fill="#20DE6B" stroke="none" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
+                    </svg>
+                    <!-- Moon Icon (Active in Light Mode to switch to Dark) -->
+                    <svg class="theme-icon-moon w-4 h-4 text-slate-700 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+
                 <a href="#cta" 
                    class="bg-brand-green hover:bg-brand-greenHover text-brand-dark font-bold text-sm px-5 sm:px-6 py-2.5 rounded-full shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center gap-2">
                     <span class="hidden sm:inline">Track for free</span>
@@ -417,6 +632,15 @@
                     <span id="mobBacklogBadge" class="hidden text-[10px] font-mono font-bold bg-amber-500/20 text-amber-800 px-2 py-0.5 rounded-full">0</span>
                 </a>
                 <a href="#cta" class="py-2 text-brand-green font-bold">Generate Roadmap</a>
+            </div>
+            <!-- Dark Mode Toggle Row in Mobile Drawer -->
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs font-mono font-black uppercase text-slate-400">THEME</span>
+                <button type="button" onclick="toggleTheme()" class="theme-toggle-btn flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-slate-800">
+                    <svg class="theme-icon-sun w-3.5 h-3.5 text-brand-green hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="#20DE6B"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+                    <svg class="theme-icon-moon w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <span>Toggle Theme</span>
+                </button>
             </div>
         </div>
     </header>
@@ -1513,6 +1737,13 @@
                 <button onclick="jumpToActiveVideo()" title="Jump to current task on page"
                         class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition-colors shrink-0">
                     ↓
+                </button>
+
+                <!-- Theme Toggle in HUD -->
+                <button onclick="toggleTheme()" title="Toggle Dark / Light Theme"
+                        class="theme-toggle-btn w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center text-xs transition-colors shrink-0">
+                    <svg class="theme-icon-sun w-3.5 h-3.5 text-brand-green hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="#20DE6B"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+                    <svg class="theme-icon-moon w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                 </button>
 
                 <!-- Minimize to corner orb (Keeps center text 100% free) -->
@@ -4315,6 +4546,74 @@
         }
 
         // ---------------------------------------------------------
+        // 9B. DARK MODE THEME ENGINE (Persistence & System Sync)
+        // ---------------------------------------------------------
+        const STORAGE_THEME = 'm2l_theme';
+
+        function initTheme() {
+            try {
+                const saved = localStorage.getItem(STORAGE_THEME);
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const isDark = saved === 'dark' || (!saved && prefersDark);
+                applyTheme(isDark);
+
+                if (window.matchMedia) {
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                        if (!localStorage.getItem(STORAGE_THEME)) {
+                            applyTheme(e.matches);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.warn('Theme init exception:', err);
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const newIsDark = !isDark;
+            applyTheme(newIsDark);
+            try {
+                localStorage.setItem(STORAGE_THEME, newIsDark ? 'dark' : 'light');
+            } catch (e) {}
+
+            showToastNotification(
+                newIsDark ? 'Midnight Carbon Active' : 'Daylight Alpine Active',
+                newIsDark ? 'Dark theme enabled across all roadmap modules.' : 'Light daylight theme restored.'
+            );
+        }
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeToggleIcons(isDark);
+        }
+
+        function updateThemeToggleIcons(isDark) {
+            const sunIcons = document.querySelectorAll('.theme-icon-sun');
+            const moonIcons = document.querySelectorAll('.theme-icon-moon');
+            const themeBtns = document.querySelectorAll('.theme-toggle-btn');
+
+            sunIcons.forEach(icon => {
+                if (isDark) icon.classList.remove('hidden');
+                else icon.classList.add('hidden');
+            });
+
+            moonIcons.forEach(icon => {
+                if (isDark) icon.classList.add('hidden');
+                else icon.classList.remove('hidden');
+            });
+
+            themeBtns.forEach(btn => {
+                btn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+                btn.setAttribute('title', isDark ? 'Switch to Light Mode (Daylight)' : 'Switch to Dark Mode (Midnight Carbon)');
+            });
+        }
+
+        // ---------------------------------------------------------
         // 10. MASTER SYSTEM INITIALIZATION
         // ---------------------------------------------------------
         function initUniversalEngine() {
@@ -4368,6 +4667,7 @@
             initSmartHud();
             recalculatePacing();
             renderCourseSwitcherUI();
+            initTheme();
         }
 
         if (document.readyState === 'loading') {
