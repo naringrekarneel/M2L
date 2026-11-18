@@ -302,56 +302,33 @@
 
         .bird-traveler {
             position: absolute;
-            will-change: transform, opacity;
-            animation: birdTraverse linear infinite;
+            left: -140px;
+            pointer-events: none;
+            will-change: transform;
+            animation: birdFlyPath linear infinite;
         }
 
         .bird-svg {
             display: block;
-            width: 32px;
-            height: 14px;
-            fill: #2D4356;
-            opacity: 0.82;
-            filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.15));
+            pointer-events: none;
+            filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.18));
         }
 
-        .bird-wing {
-            transform-origin: 16px 10px;
-            animation: birdFlap ease-in-out infinite alternate;
-        }
-
-        @keyframes birdFlap {
+        @keyframes birdFlyPath {
             0% {
-                transform: scaleY(1);
-            }
-            100% {
-                transform: scaleY(-0.7) translateY(4px);
-            }
-        }
-
-        @keyframes birdTraverse {
-            0% {
-                transform: translateX(-120px) translateY(0px);
-                opacity: 0;
-            }
-            5% {
-                opacity: 0.85;
+                transform: translate3d(0, 0, 0);
             }
             25% {
-                transform: translateX(25vw) translateY(-18px);
+                transform: translate3d(30vw, -16px, 0);
             }
             50% {
-                transform: translateX(50vw) translateY(12px);
+                transform: translate3d(60vw, 14px, 0);
             }
             75% {
-                transform: translateX(75vw) translateY(-14px);
-            }
-            95% {
-                opacity: 0.85;
+                transform: translate3d(85vw, -10px, 0);
             }
             100% {
-                transform: translateX(calc(100vw + 120px)) translateY(0px);
-                opacity: 0;
+                transform: translate3d(calc(100vw + 200px), 8px, 0);
             }
         }
 
@@ -599,46 +576,58 @@
                  AMBIENT DAYLIGHT SOARING BIRDS (VISIBLE IN DAY MODE ONLY)
             ============================================================= -->
             <div class="birds-layer" aria-hidden="true">
-                <div class="bird-traveler" style="top: 110px; animation-duration: 24s; animation-delay: 0s; transform: scale(1.05);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.42s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                <div class="bird-traveler" style="top: 125px; animation-duration: 26s; animation-delay: -6s;">
+                    <svg class="bird-svg" viewBox="0 0 52 26" width="36" height="18" fill="#223547">
+                        <path>
+                            <animate attributeName="d" dur="0.46s" repeatCount="indefinite"
+                                values="M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,22 C 14,19 21,14 26,14 C 31,14 38,19 51,22 C 40,18 31,16 26,16 C 21,16 12,18 1,22 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z"
+                                keyTimes="0; 0.25; 0.5; 0.75; 1" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" />
+                        </path>
                     </svg>
                 </div>
-                <div class="bird-traveler" style="top: 145px; animation-duration: 27s; animation-delay: 3.5s; transform: scale(0.88);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.38s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                <div class="bird-traveler" style="top: 160px; animation-duration: 29s; animation-delay: -17s;">
+                    <svg class="bird-svg" viewBox="0 0 52 26" width="30" height="15" fill="#283C4F">
+                        <path>
+                            <animate attributeName="d" dur="0.42s" repeatCount="indefinite"
+                                values="M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,22 C 14,19 21,14 26,14 C 31,14 38,19 51,22 C 40,18 31,16 26,16 C 21,16 12,18 1,22 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z"
+                                keyTimes="0; 0.25; 0.5; 0.75; 1" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" />
+                        </path>
                     </svg>
                 </div>
-                <div class="bird-traveler" style="top: 210px; animation-duration: 30s; animation-delay: 11s; transform: scale(1.2);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.52s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                <div class="bird-traveler" style="top: 215px; animation-duration: 33s; animation-delay: -27s;">
+                    <svg class="bird-svg" viewBox="0 0 52 26" width="42" height="21" fill="#1C2B39">
+                        <path>
+                            <animate attributeName="d" dur="0.54s" repeatCount="indefinite"
+                                values="M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,22 C 14,19 21,14 26,14 C 31,14 38,19 51,22 C 40,18 31,16 26,16 C 21,16 12,18 1,22 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z"
+                                keyTimes="0; 0.25; 0.5; 0.75; 1" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" />
+                        </path>
                     </svg>
                 </div>
-                <div class="bird-traveler" style="top: 80px; animation-duration: 35s; animation-delay: 7s; transform: scale(0.65);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.34s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                <div class="bird-traveler" style="top: 80px; animation-duration: 38s; animation-delay: -11s;">
+                    <svg class="bird-svg" viewBox="0 0 52 26" width="22" height="11" fill="#3B5065">
+                        <path>
+                            <animate attributeName="d" dur="0.36s" repeatCount="indefinite"
+                                values="M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,22 C 14,19 21,14 26,14 C 31,14 38,19 51,22 C 40,18 31,16 26,16 C 21,16 12,18 1,22 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z"
+                                keyTimes="0; 0.25; 0.5; 0.75; 1" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" />
+                        </path>
                     </svg>
                 </div>
-                <div class="bird-traveler" style="top: 100px; animation-duration: 38s; animation-delay: 9s; transform: scale(0.58);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.32s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                <div class="bird-traveler" style="top: 100px; animation-duration: 41s; animation-delay: -22s;">
+                    <svg class="bird-svg" viewBox="0 0 52 26" width="20" height="10" fill="#43586E">
+                        <path>
+                            <animate attributeName="d" dur="0.34s" repeatCount="indefinite"
+                                values="M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,22 C 14,19 21,14 26,14 C 31,14 38,19 51,22 C 40,18 31,16 26,16 C 21,16 12,18 1,22 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z"
+                                keyTimes="0; 0.25; 0.5; 0.75; 1" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" />
+                        </path>
                     </svg>
                 </div>
-                <div class="bird-traveler" style="top: 275px; animation-duration: 26s; animation-delay: 17s; transform: scale(0.95);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.45s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
-                    </svg>
-                </div>
-                <div class="bird-traveler" style="top: 320px; animation-duration: 33s; animation-delay: 21s; transform: scale(0.8);">
-                    <svg class="bird-svg" viewBox="0 0 32 14">
-                        <path class="bird-wing" style="animation-duration: 0.4s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
-                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                <div class="bird-traveler" style="top: 270px; animation-duration: 31s; animation-delay: -3s;">
+                    <svg class="bird-svg" viewBox="0 0 52 26" width="32" height="16" fill="#263A4D">
+                        <path>
+                            <animate attributeName="d" dur="0.48s" repeatCount="indefinite"
+                                values="M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,22 C 14,19 21,14 26,14 C 31,14 38,19 51,22 C 40,18 31,16 26,16 C 21,16 12,18 1,22 Z; M 1,12 C 14,13 21,16 26,16 C 31,16 38,13 51,12 C 40,15 31,19 26,19 C 21,19 12,15 1,12 Z; M 1,4 C 14,8 21,17 26,17 C 31,17 38,8 51,4 C 40,11 31,21 26,20 C 21,21 12,11 1,4 Z"
+                                keyTimes="0; 0.25; 0.5; 0.75; 1" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" />
+                        </path>
                     </svg>
                 </div>
             </div>
