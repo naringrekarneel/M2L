@@ -1106,7 +1106,7 @@
                                 <input type="text" 
                                        id="playlistUrl"
                                        required
-                                       placeholder="Paste any YouTube playlist link, watch link, or playlist ID..." 
+                                       placeholder="Paste YouTube playlist, or a 10-12 hour single full course video..." 
                                        value="https://www.youtube.com/playlist?list=PLillGF-RfqbYeckUaD1z6nE4DoOZNmau"
                                        class="w-full pl-12 pr-4 py-3.5 bg-white text-slate-900 placeholder:text-slate-400 text-sm sm:text-base font-semibold rounded-xl md:rounded-full outline-none focus:ring-4 focus:ring-brand-green/60 shadow-inner transition-all">
                             </div>
@@ -1227,6 +1227,9 @@
                     <!-- Quick Sample Buttons -->
                     <div class="mt-8 flex flex-wrap items-center justify-center gap-2 text-xs text-white/80">
                         <span class="font-bold text-white/90">Quick test presets:</span>
+                        <button type="button" onclick="loadPreset('oneshot_python')" class="px-3 py-1 rounded-full bg-brand-green text-brand-dark font-extrabold hover:bg-brand-greenHover transition-all shadow-sm">
+                            10h One-Shot (Python Course)
+                        </button>
                         <button type="button" onclick="loadPreset('cs50')" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-colors">
                             Harvard CS50 (12 Days)
                         </button>
@@ -1237,7 +1240,7 @@
                             Deep Learning (20 Days)
                         </button>
                         <button type="button" onclick="loadPreset('demo')" class="px-3 py-1 rounded-full bg-brand-green/20 hover:bg-brand-green/30 border border-brand-green/40 text-brand-green font-bold transition-colors">
-                            Original Demo (Day 12 Active)
+                            Original Demo
                         </button>
                     </div>
 
@@ -2026,9 +2029,70 @@
         }
 
         // ---------------------------------------------------------
+        // 2B. REAL YOUTUBE ONE-SHOT MEGA VIDEO FETCHER ENGINE
+        // Connects to local endpoint (/api/video or /api/playlist?id=...)
+        // Extracts structured chapters from 10-12h videos
+        // ---------------------------------------------------------
+        async function fetchYouTubeVideoData(videoId) {
+            if (!videoId) return null;
+
+            const candidateEndpoints = [
+                `/api/video?id=${encodeURIComponent(videoId)}`,
+                `http://localhost:8000/api/video?id=${encodeURIComponent(videoId)}`,
+                `http://127.0.0.1:8000/api/video?id=${encodeURIComponent(videoId)}`,
+                `/api/playlist?id=${encodeURIComponent(videoId)}`,
+                `http://localhost:8000/api/playlist?id=${encodeURIComponent(videoId)}`,
+                `http://127.0.0.1:8000/api/playlist?id=${encodeURIComponent(videoId)}`
+            ];
+
+            for (const endpoint of candidateEndpoints) {
+                try {
+                    const res = await fetch(endpoint, { signal: AbortSignal.timeout(20000) });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.success && data.videos && data.videos.length > 0) {
+                            return {
+                                isOneShot: true,
+                                videoId: data.videoId || videoId,
+                                title: data.title || 'YouTube One-Shot Full Course',
+                                author: data.author || '',
+                                totalDurationSec: data.totalDurationSec || 0,
+                                totalDurationText: data.totalDurationText || '',
+                                videos: data.videos
+                            };
+                        }
+                    }
+                } catch (e) {
+                    // Try next candidate
+                }
+            }
+
+            // Fallback: oEmbed query if server is unreachable
+            try {
+                const oembedRes = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`, { signal: AbortSignal.timeout(4000) });
+                if (oembedRes.ok) {
+                    const oembedData = await oembedRes.json();
+                    if (oembedData && oembedData.title) {
+                        return {
+                            isOneShot: true,
+                            videoId: videoId,
+                            title: oembedData.title,
+                            author: oembedData.author_name || '',
+                            totalDurationSec: 36000,
+                            totalDurationText: '10h 00m',
+                            videos: []
+                        };
+                    }
+                }
+            } catch (e) {}
+
+            return null;
+        }
+
+        // ---------------------------------------------------------
         // 3. BUILD COURSE FROM REAL VIDEOS (DISTRIBUTED OVER DAYS)
         // ---------------------------------------------------------
-        function createCourseFromRealVideos(playlistTitle, author, rawVideos, targetDays, dailyHours, mode, originalUrl) {
+        function createCourseFromRealVideos(playlistTitle, author, rawVideos, targetDays, dailyHours, mode, originalUrl, isOneShotMeta = {}) {
             const totalCount = rawVideos.length;
 
             // 1. Normalize and parse each video duration
@@ -2037,7 +2101,17 @@
                 // Realistic fallback if duration is missing (~18-28 mins)
                 let baseSec = 1080 + ((videoNum * 197) % 720);
                 let durText = '';
-                if (rv.durationText) {
+                
+                if (typeof rv.durationSec === 'number' && rv.durationSec > 0) {
+                    baseSec = rv.durationSec;
+                    if (rv.durationText) {
+                        durText = rv.durationText;
+                    } else {
+                        const m = Math.floor(baseSec / 60);
+                        const s = baseSec % 60;
+                        durText = `${m}:${s < 10 ? '0' + s : s}`;
+                    }
+                } else if (rv.durationText) {
                     durText = rv.durationText;
                     const parts = rv.durationText.split(':').map(Number);
                     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
@@ -2051,15 +2125,33 @@
                     durText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
                 }
 
+                const isOneShot = Boolean(rv.isOneShot || isOneShotMeta.isOneShot);
+                let note = '';
+                if (isOneShot && rv.timestamp) {
+                    note = `Chapter milestone • Starts at ${rv.timestamp}`;
+                } else if (rv.description) {
+                    note = rv.description.slice(0, 75) + '...';
+                } else {
+                    note = `Lesson ${videoNum} of curriculum`;
+                }
+
+                let ytUrl = rv.ytUrl;
+                if (!ytUrl && rv.id) {
+                    ytUrl = `https://www.youtube.com/watch?v=${rv.id}`;
+                }
+
                 return {
-                    id: rv.id ? `yt_${rv.id}` : `v_${videoNum}`,
-                    rawId: rv.id || '',
+                    id: rv.id ? (rv.id.startsWith('oneshot_') || rv.id.startsWith('yt_') ? rv.id : `yt_${rv.id}`) : `v_${videoNum}`,
+                    rawId: rv.rawId || rv.id || '',
                     num: videoNum,
                     title: rv.title || `Lesson ${videoNum}`,
                     durationSec: baseSec,
                     durationText: durText,
-                    note: rv.description ? rv.description.slice(0, 75) + '...' : `Lesson ${videoNum} of curriculum`,
-                    ytUrl: rv.id ? `https://www.youtube.com/watch?v=${rv.id}` : null
+                    note: note,
+                    ytUrl: ytUrl,
+                    timestamp: rv.timestamp || null,
+                    startSec: rv.startSec !== undefined ? rv.startSec : null,
+                    isOneShot: isOneShot
                 };
             });
 
@@ -2151,14 +2243,16 @@
             const courseTitle = author ? `${playlistTitle} (${author})` : playlistTitle;
 
             return {
-                id: `real_${Date.now()}`,
+                id: isOneShotMeta.isOneShot ? `oneshot_${Date.now()}` : `real_${Date.now()}`,
                 title: courseTitle,
                 shortTitle: playlistTitle.slice(0, 24),
                 url: originalUrl || 'https://www.youtube.com',
                 totalDays: days.length,
                 activeDayNum: 1,
                 totalHours: parseFloat(totalHours),
-                totalVideos: totalCount,
+                totalVideos: parsedVideos.length,
+                isOneShot: Boolean(isOneShotMeta.isOneShot),
+                oneShotTotalDuration: isOneShotMeta.totalDurationText || null,
                 archive: null,
                 days: days
             };
@@ -2456,6 +2550,7 @@
                 totalHours: course.totalHours,
                 activeDayNum: course.activeDayNum || 1,
                 updatedAt: Date.now(),
+                isOneShot: Boolean(course.isOneShot),
                 data: course
             };
 
@@ -2588,6 +2683,7 @@
                             </div>
                             <div class="flex items-center gap-1 shrink-0">
                                 ${isActive ? '<span class="text-[9px] font-mono font-black text-brand-dark bg-brand-green px-1.5 py-0.5 rounded-full">ACTIVE</span>' : ''}
+                                ${c.isOneShot ? '<span class="text-[9px] font-mono font-bold text-brand-dark bg-brand-green/30 px-1 py-0.5 rounded">1-SHOT</span>' : ''}
                                 ${courses.length > 1 ? `
                                     <button type="button" onclick="deleteEnrolledCourse('${c.id}', event)" title="Remove Roadmap"
                                             class="w-5 h-5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors text-xs font-black">
@@ -2597,7 +2693,7 @@
                             </div>
                         </div>
                         <div class="flex items-center justify-between text-[10px] text-slate-500 font-medium">
-                            <span>${c.totalVideos} videos • ${c.totalDays} days</span>
+                            <span>${c.isOneShot ? `${c.totalVideos} chapters` : `${c.totalVideos} videos`} • ${c.totalDays} days</span>
                             <span class="font-mono font-bold ${isActive ? 'text-brand-dark' : 'text-slate-600'}">${comp.length}/${totalV} (${pct}%)</span>
                         </div>
                         <div class="w-full bg-slate-200 rounded-full h-1 mt-1.5 overflow-hidden">
@@ -2715,13 +2811,19 @@
             let videosMarkup = '';
             activeDay.videos.forEach((v, idx) => {
                 const isFirst = (idx === 0);
+                const timestampBadge = v.timestamp ? `
+                    <span class="text-[10px] font-mono font-bold text-brand-dark bg-brand-green/25 border border-brand-green/50 px-2 py-0.5 rounded shrink-0 flex items-center gap-0.5" title="Chapter starts at ${v.timestamp}">
+                        <span>@</span><span>${v.timestamp}</span>
+                    </span>
+                ` : '';
+
+                const ytBtnText = v.timestamp ? `Watch @ ${v.timestamp} ↗` : `YouTube ↗`;
                 const ytLinkBtn = v.ytUrl ? `
                     <a href="${v.ytUrl}" target="_blank" rel="noopener noreferrer" 
                        onclick="event.stopPropagation();"
-                       title="Open video on YouTube"
+                       title="${v.timestamp ? `Open video at timestamp ${v.timestamp}` : 'Open video on YouTube'}"
                        class="text-[11px] font-mono font-bold text-red-500 hover:text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200 shrink-0 flex items-center gap-1 hover:bg-red-100 transition-colors">
-                        <span>YouTube</span>
-                        <span>↗</span>
+                        <span>${ytBtnText}</span>
                     </a>
                 ` : '';
 
@@ -2729,12 +2831,13 @@
                     <label id="videoRow_${v.id}" class="flex items-center gap-4 p-4 rounded-2xl ${isFirst ? 'bg-brand-green/10 border-2 border-brand-green/60 shadow-sm ring-1 ring-brand-green/30' : 'bg-slate-50/80 hover:bg-slate-100/80 border border-slate-200/70'} transition-all cursor-pointer group/item">
                         <input type="checkbox" id="main_${v.id}" class="video-checkbox shrink-0" data-duration="${v.durationSec}" onchange="syncFromMain('${v.id}', ${activeDay.dayNum})">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="text-sm sm:text-base font-bold text-slate-900 group-hover/item:text-brand-dark transition-colors flex items-center gap-2">
-                                    <span class="module-title-text">${v.title}</span>
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-2 min-w-0 flex-1">
+                                    <span class="module-title-text text-sm sm:text-base font-bold text-slate-900 group-hover/item:text-brand-dark transition-colors truncate sm:whitespace-normal">${v.title}</span>
                                     <span class="active-now-tag ${isFirst ? '' : 'hidden'} text-[10px] font-mono font-black bg-brand-green text-brand-dark px-2.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap shrink-0 inline-flex items-center animate-pulse">ACTIVE NOW</span>
-                                </span>
+                                </div>
                                 <div class="flex items-center gap-2 shrink-0">
+                                    ${timestampBadge}
                                     ${ytLinkBtn}
                                     <span class="text-xs font-mono font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0">${v.durationText}</span>
                                 </div>
@@ -2747,6 +2850,12 @@
                     </label>
                 `;
             });
+
+            const oneShotPill = course.isOneShot ? `
+                <span class="text-[10px] font-mono font-black text-brand-dark bg-brand-green px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                    ONE-SHOT FULL COURSE
+                </span>
+            ` : '';
 
             container.innerHTML = `
                 <div class="bg-brand-green/5 rounded-[2.5rem] p-6 sm:p-10 border-2 border-brand-green/30 shadow-lg mb-12" id="todaySprintCard" data-day="${activeDay.dayNum}">
@@ -2774,6 +2883,7 @@
                             <div class="relative z-10 max-w-xl mb-6">
                                 <div class="inline-flex items-center gap-2 text-xs font-bold text-brand-green bg-brand-dark px-3 py-1 rounded-full mb-2">
                                     <span>${course.shortTitle || "Today's Curriculum"}</span>
+                                    ${oneShotPill}
                                 </div>
                                 <h3 class="text-2xl sm:text-3xl font-extrabold text-brand-dark tracking-tight mb-2">
                                     ${activeDay.title}
@@ -2852,12 +2962,19 @@
 
                 let videoList = '';
                 day.videos.forEach(v => {
+                    const timestampBadge = v.timestamp ? `
+                        <span class="text-[9px] font-mono font-bold text-brand-dark bg-brand-green/25 border border-brand-green/40 px-1.5 py-0.5 rounded shrink-0">
+                            @ ${v.timestamp}
+                        </span>
+                    ` : '';
+
+                    const ytBtnText = v.timestamp ? `Watch @ ${v.timestamp} ↗` : `YouTube ↗`;
                     const ytLinkBtn = v.ytUrl ? `
                         <a href="${v.ytUrl}" target="_blank" rel="noopener noreferrer" 
                            onclick="event.stopPropagation();"
-                           title="Open video on YouTube"
+                           title="${v.timestamp ? `Open video at timestamp ${v.timestamp}` : 'Open video on YouTube'}"
                            class="text-[10px] font-mono font-bold text-red-500 hover:text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-200 shrink-0">
-                            YouTube ↗
+                            ${ytBtnText}
                         </a>
                     ` : '';
 
@@ -2865,8 +2982,11 @@
                         <label class="flex items-center gap-3 p-3 rounded-xl bg-white/80 hover:bg-white transition-colors cursor-pointer border border-slate-200/70">
                             <input type="checkbox" id="main_${v.id}" class="video-checkbox shrink-0" data-duration="${v.durationSec}" onchange="syncFromMain('${v.id}', ${day.dayNum})">
                             <div class="flex-1 min-w-0 flex items-center justify-between gap-2">
-                                <span class="text-xs sm:text-sm font-bold text-slate-800">${v.title}</span>
+                                <div class="min-w-0 flex items-center gap-2">
+                                    <span class="text-xs sm:text-sm font-bold text-slate-800 truncate sm:whitespace-normal">${v.title}</span>
+                                </div>
                                 <div class="flex items-center gap-2 shrink-0">
+                                    ${timestampBadge}
                                     ${ytLinkBtn}
                                     <span class="text-[10px] sm:text-xs font-mono font-semibold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200 shrink-0">${v.durationText}</span>
                                 </div>
@@ -3609,7 +3729,7 @@
         }
 
         async function handleGenerateRoadmap(event) {
-            event.preventDefault();
+            if (event && event.preventDefault) event.preventDefault();
             const urlInput = document.getElementById('playlistUrl');
             const submitBtn = document.getElementById('submitBtn');
             const toast = document.getElementById('generatorToast');
@@ -3623,47 +3743,90 @@
             const targetDays = parseInt(daysInput ? daysInput.value : 14) || 14;
             const dailyHours = parseFloat(hoursInput ? hoursInput.value : 1.5) || 1.5;
 
-            // Extract playlist ID
-            let playlistId = '';
+            // Extract playlist ID or Single Video ID
+            let playlistId = null;
+            let videoId = null;
+
             const listMatch = rawInput.match(/[?&]list=([a-zA-Z0-9_-]+)/i);
             if (listMatch) {
                 playlistId = listMatch[1];
-            } else if (/^[a-zA-Z0-9_-]{10,}$/.test(rawInput)) {
-                playlistId = rawInput;
+            } else {
+                const vMatch = rawInput.match(/(?:v=|\/embed\/|\/v\/|youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/i);
+                if (vMatch) {
+                    videoId = vMatch[1];
+                } else if (/^[a-zA-Z0-9_-]{11}$/.test(rawInput) && !rawInput.startsWith('PL') && !rawInput.startsWith('UU') && !rawInput.startsWith('FL')) {
+                    videoId = rawInput;
+                } else if (/^[a-zA-Z0-9_-]{10,}$/.test(rawInput)) {
+                    playlistId = rawInput;
+                }
             }
-            if (playlistId.includes('&')) playlistId = playlistId.split('&')[0];
-            if (playlistId.includes('#')) playlistId = playlistId.split('#')[0];
+
+            if (playlistId) {
+                if (playlistId.includes('&')) playlistId = playlistId.split('&')[0];
+                if (playlistId.includes('#')) playlistId = playlistId.split('#')[0];
+            }
 
             // Button loading animation
             const originalBtnContent = submitBtn ? submitBtn.innerHTML : '';
             if (submitBtn) {
                 submitBtn.disabled = true;
+                const loadingText = videoId 
+                    ? 'Analyzing 10-12h Course & Extracting Chapters...' 
+                    : 'Fetching All Videos & Calibrating Syllabus...';
                 submitBtn.innerHTML = `
                     <svg class="animate-spin w-5 h-5 text-brand-dark" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Fetching All Videos & Calibrating Syllabus...</span>
+                    <span>${loadingText}</span>
                 `;
             }
 
             let newCourse = null;
             let importSource = 'synthesizer';
 
-            // 1. If playlistId is found, try fetching real YouTube playlist data
-            if (playlistId) {
+            // 1. If Single Video (10-12 hour One-Shot Course)
+            if (videoId) {
+                try {
+                    const vData = await fetchYouTubeVideoData(videoId);
+                    if (vData && vData.videos && vData.videos.length > 0) {
+                        newCourse = createCourseFromRealVideos(
+                            vData.title, 
+                            vData.author, 
+                            vData.videos, 
+                            targetDays, 
+                            dailyHours, 
+                            currentGeneratorMode, 
+                            rawInput, 
+                            { isOneShot: true, totalDurationText: vData.totalDurationText }
+                        );
+                        importSource = 'youtube_oneshot';
+                    }
+                } catch (err) {
+                    console.warn('Real YouTube one-shot fetch attempt:', err);
+                }
+            } else if (playlistId) {
+                // 2. If playlist
                 try {
                     const ytData = await fetchYouTubePlaylistData(playlistId);
                     if (ytData && ytData.videos && ytData.videos.length > 0) {
-                        newCourse = createCourseFromRealVideos(ytData.title, ytData.author, ytData.videos, targetDays, dailyHours, currentGeneratorMode, rawInput);
+                        newCourse = createCourseFromRealVideos(
+                            ytData.title, 
+                            ytData.author, 
+                            ytData.videos, 
+                            targetDays, 
+                            dailyHours, 
+                            currentGeneratorMode, 
+                            rawInput
+                        );
                         importSource = 'youtube_live';
                     }
                 } catch (err) {
-                    console.warn('Real YouTube fetch attempt:', err);
+                    console.warn('Real YouTube playlist fetch attempt:', err);
                 }
             }
 
-            // 2. If not fetched (or if user entered topic/preset), use smart topic synthesizer
+            // 3. Fallback synthesizer if network fetch failed
             if (!newCourse) {
                 newCourse = generateCourseFromUrl(rawInput, targetDays, dailyHours, currentGeneratorMode);
             }
@@ -3684,7 +3847,10 @@
             // Show Toast with explicit source indicator
             if (toast && toastTitle && toastMessage) {
                 toast.classList.remove('hidden');
-                if (importSource === 'youtube_live') {
+                if (importSource === 'youtube_oneshot') {
+                    toastTitle.innerText = `One-Shot Full Course Loaded (${newCourse.totalVideos} Chapters)!`;
+                    toastMessage.innerText = `Parsed "${newCourse.title}" (${newCourse.oneShotTotalDuration || (newCourse.totalHours + 'h')}). Divided into ${newCourse.totalVideos} chapters with timestamps across ${newCourse.totalDays} days.`;
+                } else if (importSource === 'youtube_live') {
                     toastTitle.innerText = `YouTube Playlist Loaded (${newCourse.totalVideos} Videos)!`;
                     toastMessage.innerText = `Successfully loaded all ${newCourse.totalVideos} lessons from "${newCourse.title}". Calibrated across ${newCourse.totalDays} days.`;
                 } else {
@@ -3704,6 +3870,11 @@
         function loadPreset(key) {
             const urlInput = document.getElementById('playlistUrl');
             const presetConfigs = {
+                oneshot_python: {
+                    url: 'https://www.youtube.com/watch?v=eWRfhZUzrAc',
+                    days: 14,
+                    hours: 2.0
+                },
                 cs50: {
                     url: 'https://www.youtube.com/playlist?list=PLhQjrBD2T382_RPoW387dcVgiqc_5V0h6',
                     days: 12,
@@ -3737,6 +3908,11 @@
             setPresetDays(cfg.days);
             setPresetHours(cfg.hours);
             recalculatePacing();
+
+            if (key === 'oneshot_python') {
+                handleGenerateRoadmap(new Event('submit'));
+                return;
+            }
 
             if (key === 'demo') {
                 const demoCourse = JSON.parse(JSON.stringify(CURRICULUM_TEMPLATES.demo));
