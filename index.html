@@ -283,6 +283,130 @@
             color: #080C14 !important;
         }
 
+
+        /* =============================================================
+           ATMOSPHERIC LIFE ENGINE: DAYLIGHT BIRDS & MIDNIGHT FIREFLIES
+        ============================================================= */
+        
+        /* --- 1. DAYLIGHT SOARING BIRDS --- */
+        .birds-layer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5;
+        }
+        html.dark .birds-layer {
+            display: none !important;
+        }
+
+        .bird-traveler {
+            position: absolute;
+            will-change: transform, opacity;
+            animation: birdTraverse linear infinite;
+        }
+
+        .bird-svg {
+            display: block;
+            width: 32px;
+            height: 14px;
+            fill: #2D4356;
+            opacity: 0.82;
+            filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.15));
+        }
+
+        .bird-wing {
+            transform-origin: 16px 10px;
+            animation: birdFlap ease-in-out infinite alternate;
+        }
+
+        @keyframes birdFlap {
+            0% {
+                transform: scaleY(1);
+            }
+            100% {
+                transform: scaleY(-0.7) translateY(4px);
+            }
+        }
+
+        @keyframes birdTraverse {
+            0% {
+                transform: translateX(-120px) translateY(0px);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.85;
+            }
+            25% {
+                transform: translateX(25vw) translateY(-18px);
+            }
+            50% {
+                transform: translateX(50vw) translateY(12px);
+            }
+            75% {
+                transform: translateX(75vw) translateY(-14px);
+            }
+            95% {
+                opacity: 0.85;
+            }
+            100% {
+                transform: translateX(calc(100vw + 120px)) translateY(0px);
+                opacity: 0;
+            }
+        }
+
+        /* --- 2. MIDNIGHT BIOLUMINESCENT FIREFLIES --- */
+        .fireflies-layer {
+            display: none;
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5;
+        }
+        html.dark .fireflies-layer {
+            display: block !important;
+        }
+
+        .firefly {
+            position: absolute;
+            border-radius: 9999px;
+            pointer-events: none;
+            will-change: transform, opacity, box-shadow;
+            background: #20DE6B;
+            box-shadow: 
+                0 0 6px 2px rgba(32, 222, 107, 0.95),
+                0 0 16px 5px rgba(32, 222, 107, 0.5),
+                0 0 28px 10px rgba(32, 222, 107, 0.25);
+            animation: fireflyFloat ease-in-out infinite alternate, fireflyGlow ease-in-out infinite alternate;
+        }
+
+        @keyframes fireflyFloat {
+            0% {
+                transform: translate(0, 0);
+            }
+            33% {
+                transform: translate(22px, -28px);
+            }
+            66% {
+                transform: translate(-18px, -52px);
+            }
+            100% {
+                transform: translate(24px, -74px);
+            }
+        }
+
+        @keyframes fireflyGlow {
+            0%, 100% {
+                opacity: 0.15;
+                transform: scale(0.65);
+            }
+            45%, 55% {
+                opacity: 1;
+                transform: scale(1.35);
+            }
+        }
+
         /* -------------------------------------------------------------
            CRITICAL: Connected Event Ticket Cutouts
            Semicircular notches on left and right edges via CSS mask
@@ -470,6 +594,82 @@
                 <ellipse cx="420" cy="660" rx="360" ry="4" fill="#FFFFFF" fill-opacity="0.12" />
                 <ellipse cx="980" cy="700" rx="320" ry="3.5" fill="#FFFFFF" fill-opacity="0.15" />
             </svg>
+
+            <!-- =============================================================
+                 AMBIENT DAYLIGHT SOARING BIRDS (VISIBLE IN DAY MODE ONLY)
+            ============================================================= -->
+            <div class="birds-layer" aria-hidden="true">
+                <div class="bird-traveler" style="top: 110px; animation-duration: 24s; animation-delay: 0s; transform: scale(1.05);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.42s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+                <div class="bird-traveler" style="top: 145px; animation-duration: 27s; animation-delay: 3.5s; transform: scale(0.88);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.38s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+                <div class="bird-traveler" style="top: 210px; animation-duration: 30s; animation-delay: 11s; transform: scale(1.2);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.52s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+                <div class="bird-traveler" style="top: 80px; animation-duration: 35s; animation-delay: 7s; transform: scale(0.65);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.34s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+                <div class="bird-traveler" style="top: 100px; animation-duration: 38s; animation-delay: 9s; transform: scale(0.58);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.32s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+                <div class="bird-traveler" style="top: 275px; animation-duration: 26s; animation-delay: 17s; transform: scale(0.95);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.45s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+                <div class="bird-traveler" style="top: 320px; animation-duration: 33s; animation-delay: 21s; transform: scale(0.8);">
+                    <svg class="bird-svg" viewBox="0 0 32 14">
+                        <path class="bird-wing" style="animation-duration: 0.4s;" d="M16 10 C11 5, 5 1, 0 3 C4 7, 10 10, 16 10 C22 10, 28 7, 32 3 C27 1, 21 5, 16 10 Z" />
+                        <ellipse cx="16" cy="10" rx="2.5" ry="1.2" fill="#243447" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- =============================================================
+                 AMBIENT MIDNIGHT BIOLUMINESCENT FIREFLIES (DARK MODE ONLY)
+            ============================================================= -->
+            <div class="fireflies-layer" aria-hidden="true">
+                <div class="firefly" style="left: 8%; top: 210px; width: 6px; height: 6px; animation-duration: 9s, 3.2s; animation-delay: 0.2s;"></div>
+                <div class="firefly" style="left: 16%; top: 340px; width: 8px; height: 8px; animation-duration: 12s, 4.1s; animation-delay: 1.5s;"></div>
+                <div class="firefly" style="left: 24%; top: 180px; width: 5px; height: 5px; animation-duration: 8s, 2.8s; animation-delay: 2.7s;"></div>
+                <div class="firefly" style="left: 31%; top: 460px; width: 7px; height: 7px; animation-duration: 14s, 3.7s; animation-delay: 0.8s;"></div>
+                <div class="firefly" style="left: 38%; top: 290px; width: 6px; height: 6px; animation-duration: 10s, 3.0s; animation-delay: 3.1s;"></div>
+                <div class="firefly" style="left: 45%; top: 540px; width: 9px; height: 9px; animation-duration: 13s, 4.5s; animation-delay: 1.9s;"></div>
+                <div class="firefly" style="left: 53%; top: 230px; width: 5px; height: 5px; animation-duration: 9s, 2.6s; animation-delay: 0.5s;"></div>
+                <div class="firefly" style="left: 61%; top: 380px; width: 8px; height: 8px; animation-duration: 11s, 3.9s; animation-delay: 2.2s;"></div>
+                <div class="firefly" style="left: 69%; top: 160px; width: 6px; height: 6px; animation-duration: 8s, 3.4s; animation-delay: 1.1s;"></div>
+                <div class="firefly" style="left: 77%; top: 490px; width: 7px; height: 7px; animation-duration: 12s, 4.0s; animation-delay: 3.6s;"></div>
+                <div class="firefly" style="left: 85%; top: 270px; width: 5px; height: 5px; animation-duration: 10s, 2.9s; animation-delay: 0.9s;"></div>
+                <div class="firefly" style="left: 92%; top: 420px; width: 8px; height: 8px; animation-duration: 13s, 4.2s; animation-delay: 2.4s;"></div>
+                <div class="firefly" style="left: 12%; top: 620px; width: 7px; height: 7px; animation-duration: 11s, 3.5s; animation-delay: 1.8s;"></div>
+                <div class="firefly" style="left: 28%; top: 690px; width: 6px; height: 6px; animation-duration: 9s, 3.1s; animation-delay: 0.3s;"></div>
+                <div class="firefly" style="left: 49%; top: 730px; width: 8px; height: 8px; animation-duration: 14s, 4.3s; animation-delay: 2.9s;"></div>
+                <div class="firefly" style="left: 66%; top: 660px; width: 5px; height: 5px; animation-duration: 8s, 2.7s; animation-delay: 1.2s;"></div>
+                <div class="firefly" style="left: 82%; top: 710px; width: 7px; height: 7px; animation-duration: 12s, 3.8s; animation-delay: 3.3s;"></div>
+                <div class="firefly" style="left: 19%; top: 120px; width: 5px; height: 5px; animation-duration: 10s, 3.3s; animation-delay: 0.7s;"></div>
+                <div class="firefly" style="left: 57%; top: 140px; width: 6px; height: 6px; animation-duration: 9s, 3.0s; animation-delay: 2.0s;"></div>
+                <div class="firefly" style="left: 73%; top: 330px; width: 7px; height: 7px; animation-duration: 11s, 3.6s; animation-delay: 1.6s;"></div>
+                <div class="firefly" style="left: 41%; top: 610px; width: 8px; height: 8px; animation-duration: 13s, 4.0s; animation-delay: 3.0s;"></div>
+                <div class="firefly" style="left: 88%; top: 580px; width: 6px; height: 6px; animation-duration: 10s, 3.2s; animation-delay: 1.4s;"></div>
+            </div>
 
             <!-- CRITICAL: Pure White Top Gradient Fade -->
             <!-- The header rests on pure white and gently reveals the landscape below -->
