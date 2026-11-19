@@ -1763,6 +1763,49 @@
                 </div>
 
                 <!-- -------------------------------------------------------------
+                     TODAY OVERDUE BACKLOG RECOVERY TRAY (Visible if backlog exists)
+                ------------------------------------------------------------- -->
+                <div id="todayBacklogTray" class="hidden mb-10 reveal-item">
+                    <div class="rounded-3xl p-6 sm:p-8 bg-amber-500/10 border-2 border-amber-500/30 dark:bg-amber-950/20 dark:border-amber-500/40 shadow-sm transition-all">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-amber-500/20">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-800 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-0.5">
+                                        <span class="text-xs font-mono font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                                            Overdue Backlog Detected
+                                        </span>
+                                        <span id="todayBacklogBadge" class="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-900 dark:text-amber-200 border border-amber-500/40 px-2.5 py-0.5 rounded-full animate-pulse">
+                                            0 OVERDUE
+                                        </span>
+                                    </div>
+                                    <h4 class="text-base sm:text-lg font-black text-brand-dark dark:text-white" id="todayBacklogHeading">
+                                        Catch up on overdue modules from previous days
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+                                <button type="button" onclick="toggleTodayBacklogList()" id="todayBacklogToggleBtn"
+                                        class="text-xs font-bold px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-amber-500/40 hover:bg-amber-500/10 text-slate-800 dark:text-slate-100 transition-all flex items-center gap-1.5 shadow-sm">
+                                    <span id="todayBacklogToggleLabel">View Overdue Videos</span>
+                                    <span id="todayBacklogToggleArrow">▾</span>
+                                </button>
+                                <button type="button" onclick="document.getElementById('backlog').scrollIntoView({ behavior: 'smooth' })"
+                                        class="text-xs font-bold px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-brand-dark transition-all shadow-sm">
+                                    Vault ↗
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Collapsible List of Overdue Items directly inside Today's Hub -->
+                        <div id="todayBacklogList" class="hidden mt-4 space-y-3 pt-2">
+                            <!-- Injected dynamically by updateBacklogEngine -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- -------------------------------------------------------------
                      DYNAMIC "TODAY'S ACTIVE PLAYLIST TASK CARD" CONTAINER
                      Supports ANY parsed or generated YouTube playlist!
                 ------------------------------------------------------------- -->
@@ -4433,7 +4476,7 @@
         function syncFromMain(videoId, dayNum) {
             const mainCbs = document.querySelectorAll(`[id="main_${videoId}"]`);
             const drawerCb = document.getElementById(`drawer_${videoId}`);
-            const isChecked = mainCbs[0] ? mainCbs[0].checked : false;
+            const isChecked = mainCbs[0] ? mainCbs[0].checked : (drawerCb ? drawerCb.checked : true);
 
             mainCbs.forEach(cb => {
                 cb.checked = isChecked;
@@ -4488,11 +4531,19 @@
         }
 
         function saveProgressToStorage() {
-            const completed = [];
+            let completed = [];
+            if (windowActiveCourse && windowActiveCourse.id) {
+                completed = getCourseCompletedList(windowActiveCourse.id).slice();
+            }
             document.querySelectorAll('.video-checkbox').forEach(cb => {
-                if (cb.checked && cb.id.startsWith('main_')) {
+                if (cb.id.startsWith('main_')) {
                     const vId = cb.id.replace('main_', '');
-                    if (!completed.includes(vId)) completed.push(vId);
+                    if (cb.checked) {
+                        if (!completed.includes(vId)) completed.push(vId);
+                    } else {
+                        const idx = completed.indexOf(vId);
+                        if (idx >= 0) completed.splice(idx, 1);
+                    }
                 }
             });
             try {
@@ -4547,13 +4598,14 @@
 
             let firstUncheckedVideo = null;
             let firstUncheckedDay = currentDayNum;
+            const completedList = getCourseCompletedList(course.id);
 
             course.days.forEach(day => {
                 let dayChecked = 0;
                 day.videos.forEach((v, idx) => {
                     totalVideos++;
                     const mainCb = document.getElementById(`main_${v.id}`);
-                    const isChecked = mainCb ? mainCb.checked : false;
+                    const isChecked = mainCb ? mainCb.checked : completedList.includes(v.id);
 
                     if (isChecked) {
                         totalChecked++;
@@ -4731,6 +4783,30 @@
         // ---------------------------------------------------------
         // 8. BACKLOG & DEBT RECOVERY ENGINE
         // ---------------------------------------------------------
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function toggleTodayBacklogList() {
+            const list = document.getElementById('todayBacklogList');
+            const arrow = document.getElementById('todayBacklogToggleArrow');
+            if (!list) return;
+            const isHidden = list.classList.contains('hidden');
+            if (isHidden) {
+                list.classList.remove('hidden');
+                if (arrow) arrow.innerText = '▴';
+            } else {
+                list.classList.add('hidden');
+                if (arrow) arrow.innerText = '▾';
+            }
+        }
+
         function updateBacklogEngine() {
             const course = windowActiveCourse;
             if (!course) return;
@@ -4752,7 +4828,10 @@
                                 day: day.dayNum,
                                 videoId: v.id,
                                 title: v.title,
-                                durationMins: durationMins
+                                durationMins: durationMins,
+                                durationText: v.durationText || `${durationMins}m`,
+                                ytUrl: v.ytUrl,
+                                timestamp: v.timestamp
                             });
                         }
                     });
@@ -4794,6 +4873,13 @@
             const drawerAlert = document.getElementById('drawerBacklogAlert');
             const drawerText = document.getElementById('drawerBacklogText');
 
+            // Today's Hub Elements
+            const todayTray = document.getElementById('todayBacklogTray');
+            const todayBadge = document.getElementById('todayBacklogBadge');
+            const todayHeading = document.getElementById('todayBacklogHeading');
+            const todayToggleLabel = document.getElementById('todayBacklogToggleLabel');
+            const todayItemsList = document.getElementById('todayBacklogList');
+
             if (count === 0) {
                 if (emptyState) emptyState.classList.remove('hidden');
                 if (activeList) activeList.classList.add('hidden');
@@ -4811,6 +4897,10 @@
                 if (navBadge) navBadge.classList.add('hidden');
                 if (mobBadge) mobBadge.classList.add('hidden');
                 if (drawerAlert) drawerAlert.classList.add('hidden');
+
+                if (todayTray) todayTray.classList.add('hidden');
+                if (itemsContainer) itemsContainer.innerHTML = '';
+                if (todayItemsList) todayItemsList.innerHTML = '';
             } else {
                 if (emptyState) emptyState.classList.add('hidden');
                 if (activeList) activeList.classList.remove('hidden');
@@ -4826,7 +4916,7 @@
                     volBadge.className = 'text-[10px] font-mono font-bold bg-amber-500/20 text-amber-900 border border-amber-500/40 px-2.5 py-0.5 rounded-full animate-pulse';
                 }
                 if (statusText) statusText.innerText = `${count} overdue module${count > 1 ? 's' : ''} requiring catch-up recovery.`;
-                const remainingDays = Math.max(1, course.totalDays - currentDayNum);
+                const remainingDays = Math.max(1, course.totalDays - effectiveDay);
                 const minsPerDay = Math.ceil(totalDeficitMins / remainingDays);
                 if (recoveryAdv) recoveryAdv.innerText = `Add +${minsPerDay} mins/day across remaining days to absorb deficit.`;
                 if (stratTitle) stratTitle.innerText = 'Catch-Up Active';
@@ -4845,26 +4935,34 @@
                     drawerText.innerText = `${count} Overdue Module${count > 1 ? 's' : ''} in Backlog`;
                 }
 
+                // Render in The Backlog & Catch-Up Vault (#backlogItemsContainer)
                 if (itemsContainer) {
                     itemsContainer.innerHTML = '';
                     backlogItems.forEach(item => {
                         const card = document.createElement('div');
-                        card.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/30 hover:border-amber-500/60 transition-all';
+                        card.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/30 hover:border-amber-500/60 transition-all';
                         if (item.type === 'course') {
+                            const ytBtn = item.ytUrl ? `
+                                <a href="${item.ytUrl}" target="_blank" rel="noopener noreferrer" 
+                                   class="text-[11px] font-mono font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-1 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1 shrink-0">
+                                    <span>${item.timestamp ? `@ ${item.timestamp} ↗` : 'YouTube ↗'}</span>
+                                </a>
+                            ` : '';
                             card.innerHTML = `
-                                <div class="flex items-center gap-3.5 min-w-0">
+                                <div class="flex items-center gap-3.5 min-w-0 flex-1">
                                     <input type="checkbox" class="video-checkbox shrink-0" onchange="markBacklogItemDone('${item.videoId}', ${item.day})">
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2 mb-0.5">
-                                            <span class="text-[10px] font-mono font-black uppercase tracking-wider text-amber-800 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                                            <span class="text-[10px] font-mono font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 bg-amber-500/20 dark:bg-amber-900/40 px-2 py-0.5 rounded-full">
                                                 OVERDUE • DAY ${item.day}
                                             </span>
-                                            <span class="text-xs font-mono font-bold text-slate-500">${item.durationMins}m</span>
+                                            <span class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">${item.durationText || (item.durationMins + 'm')}</span>
                                         </div>
-                                        <div class="text-sm font-bold text-slate-900 truncate">${item.title}</div>
+                                        <div class="text-sm font-bold text-slate-900 dark:text-white truncate" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                    ${ytBtn}
                                     <button onclick="markBacklogItemDone('${item.videoId}', ${item.day})" 
                                             class="text-xs font-bold px-3.5 py-1.5 rounded-lg bg-brand-green text-brand-dark hover:bg-brand-greenHover transition-all shadow-sm">
                                         Catch Up Now ✓
@@ -4873,29 +4971,94 @@
                             `;
                         } else {
                             card.innerHTML = `
-                                <div class="flex items-center gap-3.5 min-w-0">
-                                    <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center text-amber-800 shrink-0">
+                                <div class="flex items-center gap-3.5 min-w-0 flex-1">
+                                    <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center text-amber-800 dark:text-amber-300 shrink-0">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                                     </div>
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2 mb-0.5">
-                                            <span class="text-[10px] font-mono font-black uppercase tracking-wider text-slate-700 bg-slate-200 px-2 py-0.5 rounded-full">
+                                            <span class="text-[10px] font-mono font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full">
                                                 SUPPLEMENTARY NOTE
                                             </span>
-                                            <span class="text-xs font-mono font-bold text-slate-500">${item.durationMins}m</span>
+                                            <span class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">${item.durationMins}m</span>
                                         </div>
-                                        <div class="text-sm font-bold text-slate-900 truncate">${item.title}</div>
+                                        <div class="text-sm font-bold text-slate-900 dark:text-white truncate" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
                                     <button onclick="removeCustomBacklogItem(${item.index})" 
-                                            class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                                            class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors">
                                         Remove ✕
                                     </button>
                                 </div>
                             `;
                         }
                         itemsContainer.appendChild(card);
+                    });
+                }
+
+                // Render also inside Today's Command Hub (#todayBacklogTray)
+                if (todayTray) todayTray.classList.remove('hidden');
+                if (todayBadge) todayBadge.innerText = `${count} OVERDUE`;
+                if (todayHeading) todayHeading.innerText = `Catch up on ${count} overdue module${count > 1 ? 's' : ''} (${timeStr}) from previous days`;
+                if (todayToggleLabel) todayToggleLabel.innerText = `View Overdue Videos (${count})`;
+
+                if (todayItemsList) {
+                    todayItemsList.innerHTML = '';
+                    backlogItems.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = 'flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-amber-500/30 hover:border-amber-500/60 transition-all shadow-sm';
+                        if (item.type === 'course') {
+                            const ytBtn = item.ytUrl ? `
+                                <a href="${item.ytUrl}" target="_blank" rel="noopener noreferrer" 
+                                   class="text-[11px] font-mono font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-1 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1 shrink-0">
+                                    <span>${item.timestamp ? `@ ${item.timestamp} ↗` : 'YouTube ↗'}</span>
+                                </a>
+                            ` : '';
+                            row.innerHTML = `
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <input type="checkbox" class="video-checkbox shrink-0" onchange="markBacklogItemDone('${item.videoId}', ${item.day})">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2 mb-0.5">
+                                            <span class="text-[10px] font-mono font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 bg-amber-500/20 dark:bg-amber-900/40 px-2 py-0.5 rounded-full">
+                                                DAY ${item.day}
+                                            </span>
+                                            <span class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">${item.durationText || (item.durationMins + 'm')}</span>
+                                        </div>
+                                        <div class="text-sm font-bold text-slate-900 dark:text-white truncate" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                    ${ytBtn}
+                                    <button onclick="markBacklogItemDone('${item.videoId}', ${item.day})" 
+                                            class="text-xs font-bold px-3 py-1.5 rounded-lg bg-brand-green text-brand-dark hover:bg-brand-greenHover transition-all shadow-sm">
+                                        Catch Up ✓
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            row.innerHTML = `
+                                <div class="flex items-center gap-3 min-w-0 flex-1">
+                                    <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center text-amber-800 dark:text-amber-300 shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2 mb-0.5">
+                                            <span class="text-[10px] font-mono font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full">NOTE</span>
+                                            <span class="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">${item.durationMins}m</span>
+                                        </div>
+                                        <div class="text-sm font-bold text-slate-900 dark:text-white truncate" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                                    <button onclick="removeCustomBacklogItem(${item.index})" 
+                                            class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors">
+                                        Remove ✕
+                                    </button>
+                                </div>
+                            `;
+                        }
+                        todayItemsList.appendChild(row);
                     });
                 }
             }
