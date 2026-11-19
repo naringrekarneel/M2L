@@ -2669,7 +2669,7 @@
         const STORAGE_HUD_STATE = 'm2l_hud_minimized';
 
         let windowActiveCourse = null;
-        let windowActiveDay = 12;
+        let windowActiveDay = 1;
 
         // ---------------------------------------------------------
         // 1. BUILT-IN CURRICULUM TEMPLATES
@@ -3609,10 +3609,121 @@
             } catch (e) {}
         }
 
+        // ---------------------------------------------------------
+        // 4B-1. REAL-WORLD CALENDAR ENGINE & AUTOMATIC ROLLOVER
+        // ---------------------------------------------------------
+        function getLocalDateString(dateInput) {
+            const d = dateInput ? new Date(dateInput) : new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function saveCourseStartDate(courseId, dateStr) {
+            if (!courseId || !dateStr) return;
+            try {
+                localStorage.setItem(`${STORAGE_START_DATE}_${courseId}`, dateStr);
+                localStorage.setItem(STORAGE_START_DATE, dateStr);
+            } catch (e) {
+                console.error('Error saving start date:', e);
+            }
+        }
+
+        function getCourseStartDate(course) {
+            if (!course) return getLocalDateString();
+            if (course.startDate) return course.startDate;
+
+            const saved = localStorage.getItem(`${STORAGE_START_DATE}_${course.id}`) || localStorage.getItem(STORAGE_START_DATE);
+            if (saved) {
+                course.startDate = saved;
+                return saved;
+            }
+
+            // 1. Check if enrollment timestamp is embedded in course.id
+            const idMatch = course.id && String(course.id).match(/(\d{10,13})/);
+            if (idMatch) {
+                const ts = parseInt(idMatch[1], 10);
+                const d = new Date(ts);
+                if (!isNaN(d.getTime())) {
+                    const dateStr = getLocalDateString(d);
+                    saveCourseStartDate(course.id, dateStr);
+                    course.startDate = dateStr;
+                    return dateStr;
+                }
+            }
+
+            // 2. Check enrolled courses list record
+            const enrolled = getAllEnrolledCourses();
+            const rec = enrolled.find(c => c.id === course.id);
+            if (rec) {
+                if (rec.startDate) {
+                    saveCourseStartDate(course.id, rec.startDate);
+                    course.startDate = rec.startDate;
+                    return rec.startDate;
+                }
+                if (rec.createdAt) {
+                    const d = new Date(rec.createdAt);
+                    if (!isNaN(d.getTime())) {
+                        const dateStr = getLocalDateString(d);
+                        saveCourseStartDate(course.id, dateStr);
+                        course.startDate = dateStr;
+                        return dateStr;
+                    }
+                }
+                if (rec.updatedAt) {
+                    const d = new Date(rec.updatedAt);
+                    const recDateStr = getLocalDateString(d);
+                    const todayStr = getLocalDateString();
+                    if (recDateStr < todayStr) {
+                        saveCourseStartDate(course.id, recDateStr);
+                        course.startDate = recDateStr;
+                        return recDateStr;
+                    }
+                }
+            }
+
+            // 3. Pre-existing enrolled course without a startDate:
+            // Since the user is opening this today and asking why yesterday's lessons aren't in backlog,
+            // this course was enrolled yesterday! Set startDate to yesterday.
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = getLocalDateString(yesterday);
+            saveCourseStartDate(course.id, yesterdayStr);
+            course.startDate = yesterdayStr;
+            return yesterdayStr;
+        }
+
+        function getCourseCurrentCalendarDay(course) {
+            if (!course || !course.days || course.days.length === 0) return 1;
+            const startDateStr = getCourseStartDate(course);
+            const parts = startDateStr.split('-');
+            if (parts.length !== 3) return 1;
+
+            const startYear = parseInt(parts[0], 10);
+            const startMonth = parseInt(parts[1], 10) - 1;
+            const startDay = parseInt(parts[2], 10);
+
+            const startMid = new Date(startYear, startMonth, startDay, 0, 0, 0, 0);
+            const now = new Date();
+            const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
+            const diffMs = todayMid.getTime() - startMid.getTime();
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            // On start day (diffDays = 0) -> Day 1; next day (diffDays = 1) -> Day 2, etc.
+            const calDay = Math.max(1, 1 + diffDays);
+            return Math.min(course.totalDays || course.days.length, calDay);
+        }
+
         function enrollOrUpdateCourse(course, setActive = false) {
             if (!course || !course.id) return;
             const courses = getAllEnrolledCourses();
             const existingIdx = courses.findIndex(c => c.id === course.id);
+
+            const startDate = course.startDate || (existingIdx >= 0 ? courses[existingIdx].startDate : null) || getCourseStartDate(course);
+            course.startDate = startDate;
+            saveCourseStartDate(course.id, startDate);
             
             const record = {
                 id: course.id,
@@ -3622,6 +3733,8 @@
                 totalVideos: course.totalVideos,
                 totalHours: course.totalHours,
                 activeDayNum: course.activeDayNum || 1,
+                startDate: startDate,
+                createdAt: course.createdAt || (existingIdx >= 0 ? courses[existingIdx].createdAt : Date.now()),
                 updatedAt: Date.now(),
                 isOneShot: Boolean(course.isOneShot),
                 data: course
@@ -3976,7 +4089,9 @@
             // 2. Update Today's Command Hub Section Header texts
             const todayHubBadge = document.getElementById('todayHubBadgeText');
             if (todayHubBadge) {
-                todayHubBadge.innerText = `Today's Command Hub • Day ${windowActiveDay} of ${course.totalDays}`;
+                const now = new Date();
+                const dateFormatted = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                todayHubBadge.innerText = `Today's Command Hub • Day ${windowActiveDay} of ${course.totalDays} • ${dateFormatted}`;
             }
 
             const todayHubSubtitle = document.getElementById('todayHubSubtitleText');
@@ -4619,15 +4734,17 @@
         function updateBacklogEngine() {
             const course = windowActiveCourse;
             if (!course) return;
-            const currentDayNum = windowActiveDay || course.activeDayNum || 1;
+            const calendarDay = getCourseCurrentCalendarDay(course);
+            const effectiveDay = Math.max(calendarDay, windowActiveDay || course.activeDayNum || 1);
+            const completedList = getCourseCompletedList(course.id);
             const backlogItems = [];
             let totalDeficitMins = 0;
 
             course.days.forEach(day => {
-                if (day.dayNum < currentDayNum) {
+                if (day.dayNum < effectiveDay) {
                     day.videos.forEach(v => {
-                        const cb = document.getElementById(`main_${v.id}`);
-                        if (cb && !cb.checked) {
+                        const isDone = completedList.includes(v.id);
+                        if (!isDone) {
                             const durationMins = Math.round(v.durationSec / 60);
                             totalDeficitMins += durationMins;
                             backlogItems.push({
@@ -4785,44 +4902,79 @@
         }
 
         function markBacklogItemDone(videoId, day) {
+            const course = windowActiveCourse;
+            if (course) {
+                const completed = getCourseCompletedList(course.id);
+                if (!completed.includes(videoId)) {
+                    completed.push(videoId);
+                    saveCourseCompletedList(course.id, completed);
+                    localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(completed));
+                }
+            }
+            const mainCbs = document.querySelectorAll(`[id="main_${videoId}"]`);
+            mainCbs.forEach(cb => { cb.checked = true; });
+            const drawerCb = document.getElementById(`drawer_${videoId}`);
+            if (drawerCb) drawerCb.checked = true;
+
             syncFromMain(videoId, day);
-            const mainCb = document.getElementById(`main_${videoId}`);
-            if (mainCb) mainCb.checked = true;
-            syncFromMain(videoId, day);
+            updateAllProgress();
             showToastNotification('Caught Up!', `Module from Day ${day} cleared from your backlog.`);
         }
 
         function toggleBacklogSimulation() {
             const course = windowActiveCourse;
             if (!course) return;
-            const pastDay = course.days.find(d => d.dayNum < windowActiveDay);
+            const calendarDay = getCourseCurrentCalendarDay(course);
+            const effectiveDay = Math.max(calendarDay, windowActiveDay || course.activeDayNum || 1);
+            const pastDay = course.days.find(d => d.dayNum < effectiveDay) || course.days[0];
             if (pastDay && pastDay.videos[0]) {
                 const v = pastDay.videos[0];
-                const cb = document.getElementById(`main_${v.id}`);
-                if (cb) {
-                    cb.checked = !cb.checked;
-                    syncFromMain(v.id, pastDay.dayNum);
-                    showToastNotification('Backlog Toggled', `${v.title} is now ${cb.checked ? 'Caught Up' : 'Overdue in Backlog'}.`);
-                    const backlogEl = document.getElementById('backlog');
-                    if (backlogEl) backlogEl.scrollIntoView({ behavior: 'smooth' });
+                const completed = getCourseCompletedList(course.id);
+                const isCurrentlyDone = completed.includes(v.id);
+                if (isCurrentlyDone) {
+                    const idx = completed.indexOf(v.id);
+                    if (idx >= 0) completed.splice(idx, 1);
+                } else {
+                    completed.push(v.id);
                 }
+                saveCourseCompletedList(course.id, completed);
+                localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(completed));
+                
+                const mainCbs = document.querySelectorAll(`[id="main_${v.id}"]`);
+                mainCbs.forEach(cb => { cb.checked = !isCurrentlyDone; });
+                const drawerCb = document.getElementById(`drawer_${v.id}`);
+                if (drawerCb) drawerCb.checked = !isCurrentlyDone;
+
+                updateAllProgress();
+                showToastNotification('Backlog Toggled', `${v.title} is now ${!isCurrentlyDone ? 'Caught Up' : 'Overdue in Backlog'}.`);
+                const backlogEl = document.getElementById('backlog');
+                if (backlogEl) backlogEl.scrollIntoView({ behavior: 'smooth' });
             }
         }
 
         function clearAllBacklog() {
             const course = windowActiveCourse;
             if (!course) return;
+            const calendarDay = getCourseCurrentCalendarDay(course);
+            const effectiveDay = Math.max(calendarDay, windowActiveDay || course.activeDayNum || 1);
+            const completed = getCourseCompletedList(course.id);
+
             course.days.forEach(day => {
-                if (day.dayNum < windowActiveDay) {
+                if (day.dayNum < effectiveDay) {
                     day.videos.forEach(v => {
-                        const cb = document.getElementById(`main_${v.id}`);
-                        if (cb && !cb.checked) {
-                            cb.checked = true;
-                            syncFromMain(v.id, day.dayNum);
+                        if (!completed.includes(v.id)) {
+                            completed.push(v.id);
                         }
+                        const mainCbs = document.querySelectorAll(`[id="main_${v.id}"]`);
+                        mainCbs.forEach(cb => { cb.checked = true; });
+                        const drawerCb = document.getElementById(`drawer_${v.id}`);
+                        if (drawerCb) drawerCb.checked = true;
                     });
                 }
             });
+            saveCourseCompletedList(course.id, completed);
+            localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(completed));
+            updateAllProgress();
             showToastNotification('Backlog Cleared!', 'All overdue curriculum lessons marked as completed.');
         }
 
@@ -5081,6 +5233,9 @@
             }
 
             // Enroll in multi-course storage & set as active with fresh progress
+            newCourse.startDate = getLocalDateString(new Date());
+            newCourse.createdAt = Date.now();
+            saveCourseStartDate(newCourse.id, newCourse.startDate);
             enrollOrUpdateCourse(newCourse, true);
             saveCourseCompletedList(newCourse.id, []);
             localStorage.setItem(STORAGE_COMPLETED, JSON.stringify([]));
@@ -5169,6 +5324,9 @@
                 showToastNotification('Original Demo Loaded', 'Day 12 Active Sprint restored with 81% progress.');
             } else {
                 const course = JSON.parse(JSON.stringify(CURRICULUM_TEMPLATES[key]));
+                course.startDate = getLocalDateString(new Date());
+                course.createdAt = Date.now();
+                saveCourseStartDate(course.id, course.startDate);
                 enrollOrUpdateCourse(course, true);
                 const prev = getCourseCompletedList(course.id);
                 localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(prev));
@@ -5333,9 +5491,18 @@
         function simulateNextDay() {
             const course = windowActiveCourse;
             if (!course) return;
-            const nextDay = Math.min(course.totalDays, (windowActiveDay || 1) + 1);
+            const currentCalDay = getCourseCurrentCalendarDay(course);
+            const nextDay = Math.min(course.totalDays, currentCalDay + 1);
+            
+            // Shift startDate back by 1 day to simulate 24h passing
+            const currentStart = new Date(getCourseStartDate(course));
+            currentStart.setDate(currentStart.getDate() - 1);
+            const newStartStr = getLocalDateString(currentStart);
+            course.startDate = newStartStr;
+            saveCourseStartDate(course.id, newStartStr);
+            
             setTestDay(nextDay);
-            showToastNotification('Daily Rollover Simulated', `Calendar advanced: Day ${nextDay} is now your active study day.`);
+            showToastNotification('Daily Rollover Simulated', `Calendar advanced: Day ${nextDay} is now active. Unchecked Day ${nextDay - 1} lessons moved to Backlog!`);
         }
 
         function resetDemoChecklist() {
@@ -5562,6 +5729,11 @@
 
             // Fresh visitor: Show nothing (clean empty state) until a course is loaded/generated
             if (activeCourse) {
+                // Determine real-world calendar day progression!
+                const calendarDay = getCourseCurrentCalendarDay(activeCourse);
+                activeDay = Math.max(calendarDay, activeDay || 1);
+                activeCourse.activeDayNum = activeDay;
+
                 enrollOrUpdateCourse(activeCourse, true);
                 const activeCompleted = getCourseCompletedList(activeCourse.id);
                 localStorage.setItem(STORAGE_COMPLETED, JSON.stringify(activeCompleted));
