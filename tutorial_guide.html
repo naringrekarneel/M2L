@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>M2L (Map to Learn) — Comprehensive Master Tutorial & Architecture Guide</title>
+    
+    <!-- Professional Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@1,6..72,500;1,6..72,600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Document & Print Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 12mm 12mm 12mm 12mm;
+            @bottom-right {
+                content: "M2L User Guide • Page " counter(page);
+                font-family: 'Inter', sans-serif;
+                font-size: 8pt;
+                color: #94A3B8;
+            }
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #0F172A;
+            background-color: #FFFFFF;
+            line-height: 1.5;
+            font-size: 9.5pt;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* Page Layout & Breaks */
+        .page {
+            min-height: 96vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .page-last {
+            min-height: 96vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        .page-content {
+            flex: 1;
+        }
+
+        /* Color Tokens */
+        :root {
+            --brand-green: #20DE6B;
+            --brand-green-hover: #1AC25C;
+            --brand-green-light: #E8FCF0;
+            --brand-dark: #080C14;
+            --brand-slate: #0F172A;
+            --brand-muted: #64748B;
+            --brand-border: #E2E8F0;
+            --amber-accent: #D97706;
+            --amber-light: #FEF3C7;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #080C14;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: 26pt; }
+        h2 { font-size: 16pt; margin-top: 6pt; margin-bottom: 6pt; border-bottom: 1.5px solid var(--brand-border); padding-bottom: 4pt; }
+        h3 { font-size: 12pt; margin-top: 8pt; margin-bottom: 4pt; }
+        h4 { font-size: 10.5pt; margin-top: 6pt; margin-bottom: 3pt; }
+
+        p {
+            margin-bottom: 6pt;
+            color: #334155;
+            font-size: 9pt;
+            line-height: 1.45;
+        }
+
+        strong {
+            color: #080C14;
+            font-weight: 700;
+        }
+
+        /* Badges & Tags */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 9999px;
+            font-size: 7.5pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'Inter', monospace;
+        }
+
+        .badge-green {
+            background-color: var(--brand-green-light);
+            color: #0A5E2C;
+            border: 1px solid rgba(32, 222, 107, 0.4);
+        }
+
+        .badge-dark {
+            background-color: var(--brand-dark);
+            color: #FFFFFF;
+        }
+
+        .badge-amber {
+            background-color: var(--amber-light);
+            color: #92400E;
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        /* Callout Boxes */
+        .callout {
+            border-radius: 8px;
+            padding: 7pt 10pt;
+            margin: 7pt 0;
+            font-size: 8.5pt;
+            border-left: 3.5px solid var(--brand-green);
+            background: #F8FAFC;
+        }
+
+        .callout-title {
+            font-weight: 800;
+            color: #080C14;
+            margin-bottom: 2pt;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 9pt;
+        }
+
+        .callout-amber {
+            border-left-color: #F59E0B;
+            background: #FFFBEB;
+        }
+
+        .callout-dark {
+            border-left-color: var(--brand-green);
+            background: #080C14;
+            color: #E2E8F0;
+        }
+
+        .callout-dark p {
+            color: #CBD5E1;
+        }
+
+        .callout-dark .callout-title {
+            color: #FFFFFF;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8pt;
+            margin: 6pt 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 7pt;
+            margin: 6pt 0;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6pt;
+            margin: 6pt 0;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            padding: 8pt;
+        }
+
+        /* Screenshots & Visuals */
+        .screenshot-container {
+            margin: 7pt 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1.5px solid var(--brand-border);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            background: #F1F5F9;
+        }
+
+        .screenshot-img {
+            width: 100%;
+            max-height: 270px;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+        }
+
+        .screenshot-caption {
+            padding: 4pt 8pt;
+            font-size: 7.5pt;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #64748B;
+            background: #F8FAFC;
+            border-top: 1px solid var(--brand-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Step Indicators */
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4pt;
+            margin-bottom: 4pt;
+        }
+
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--brand-green);
+            color: #080C14;
+            font-weight: 800;
+            font-size: 8.5pt;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 11pt;
+            font-weight: 800;
+            color: #080C14;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin-left: 12pt;
+            margin-bottom: 6pt;
+            font-size: 8.5pt;
+            color: #334155;
+        }
+
+        li {
+            margin-bottom: 2pt;
+            line-height: 1.4;
+        }
+
+        /* Cover Page Styling */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 94vh;
+            padding: 15pt 5pt;
+        }
+
+        .cover-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--brand-border);
+            padding-bottom: 10pt;
+        }
+
+        .cover-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-box {
+            width: 36px;
+            height: 36px;
+            background: #080C14;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand-green);
+            font-weight: 900;
+            font-size: 13pt;
+            box-shadow: 0 4px 12px rgba(32, 222, 107, 0.35);
+        }
+
+        .logo-text {
+            font-size: 15pt;
+            font-weight: 900;
+            color: #080C14;
+        }
+
+        .cover-body {
+            margin-top: 25pt;
+            margin-bottom: 25pt;
+        }
+
+        .cover-title {
+            font-size: 30pt;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+            color: #080C14;
+            margin-bottom: 8pt;
+        }
+
+        .cover-title span {
+            color: #16A34A;
+        }
+
+        .cover-subtitle {
+            font-size: 12pt;
+            color: #475569;
+            font-weight: 500;
+            line-height: 1.45;
+            max-width: 92%;
+            margin-bottom: 18pt;
+        }
+
+        .cover-highlights {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10pt;
+            margin-top: 20pt;
+        }
+
+        .highlight-card {
+            background: #F8FAFC;
+            border: 1.5px solid var(--brand-border);
+            border-radius: 10pt;
+            padding: 10pt;
+        }
+
+        .highlight-title {
+            font-size: 9.5pt;
+            font-weight: 800;
+            color: #080C14;
+            margin-bottom: 3pt;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .highlight-desc {
+            font-size: 8pt;
+            color: #64748B;
+            line-height: 1.35;
+        }
+
+        .cover-footer {
+            border-top: 2px solid var(--brand-border);
+            padding-top: 10pt;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8pt;
+            color: #64748B;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .feature-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6pt 0;
+            font-size: 8pt;
+        }
+
+        .feature-table th {
+            background: #F1F5F9;
+            color: #080C14;
+            text-align: left;
+            padding: 4pt 7pt;
+            font-weight: 800;
+            border: 1px solid var(--brand-border);
+        }
+
+        .feature-table td {
+            padding: 4pt 7pt;
+            border: 1px solid var(--brand-border);
+            color: #334155;
+            vertical-align: top;
+        }
+
+        .feature-table tr:nth-child(even) td {
+            background: #F8FAFC;
+        }
+
+        .page-meta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4pt;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===================================================================
+         PAGE 1: COVER PAGE
+    ==================================================================== -->
+    <div class="page">
+        <div class="cover-page">
+            <div>
+                <div class="cover-header">
+                    <div class="cover-logo">
+                        <div class="logo-box">M2L</div>
+                        <div>
+                            <div class="logo-text">Map to Learn</div>
+                            <div style="font-size: 7.5pt; font-family: 'Inter'; color: #64748B; font-weight: 600;">ZERO-CLOUD PLAYLIST PACING PLATFORM</div>
+                        </div>
+                    </div>
+                    <div class="badge badge-green">Official Product Manual & Architecture Guide</div>
+                </div>
+
+                <div class="cover-body">
+                    <div style="margin-bottom: 10pt;">
+                        <span class="badge badge-dark">Version 2.4 • Client-Side Local Architecture</span>
+                    </div>
+                    <h1 class="cover-title">
+                        Master the Timeline of Every Playlist.<br>
+                        <span>Zero Cloud. Zero Burnout.</span>
+                    </h1>
+                    <p class="cover-subtitle">
+                        The complete manifesto, design rationale, and visual step-by-step tutorial on how M2L transforms chaotic YouTube video playlists into calibrated, guilt-free daily learning roadmaps.
+                    </p>
+
+                    <div class="cover-highlights">
+                        <div class="highlight-card">
+                            <div class="highlight-title">🔒 100% Zero-Cloud</div>
+                            <div class="highlight-desc">Zero user accounts, zero remote databases, zero tracking. Complete data sovereignty in your browser.</div>
+                        </div>
+                        <div class="highlight-card">
+                            <div class="highlight-title">📅 Calendar Synchronization</div>
+                            <div class="highlight-desc">Autonomous day-by-day rollover calibrated against real-world dates for sustainable pacing.</div>
+                        </div>
+                        <div class="highlight-card">
+                            <div class="highlight-title">⚡ Backlog & Recovery Vault</div>
+                            <div class="highlight-desc">Life happens. Skipped lessons automatically aggregate in an isolated vault so today's quota stays clean.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="callout callout-dark" style="margin-bottom: 12pt;">
+                    <div class="callout-title" style="color: #20DE6B;">🚀 Why This Guide Exists</div>
+                    <p style="margin-bottom: 0;">This document serves as both a design retrospective on why the creator engineered M2L and an exhaustive visual guide for self-directed engineers, students, and certification candidates seeking to finish online courses without dropping out.</p>
+                </div>
+
+                <div class="cover-footer">
+                    <div>Document Release: November 2026 • Production Edition</div>
+                    <div>Author: Creator of M2L (Map to Learn)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 2: WHY I MADE THIS WEBSITE (THE ORIGIN & PHILOSOPHY)
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part I • Design Philosophy</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">M2L ORIGIN MANIFESTO</span>
+            </div>
+
+            <h2>Why I Made This Website: The Real Problem with Online Self-Learning</h2>
+
+            <p>
+                Online video education has democratized world-class knowledge. Full university computer science curriculums, cybersecurity certifications, full-stack bootcamps, and deep AI courses are available for free on YouTube. Yet, despite this abundance, <strong>over 90% of self-directed learners who start a YouTube playlist never reach the final video</strong>.
+            </p>
+
+            <p>
+                As a developer and continuous learner, I experienced this cycle repeatedly. M2L was born out of frustration with four fundamental design flaws of existing platforms:
+            </p>
+
+            <div class="grid-2">
+                <div class="card" style="border-left: 3px solid #EF4444;">
+                    <h4 style="color: #B91C1C; margin-top: 0;">1. The "Passive Feed" Trap</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">YouTube playlists are passive media queues designed for binge entertainment, not structured education. They do not calculate how many minutes of study you need today, nor do they tell you when you will graduate. Without daily structure, learners drift.</p>
+                </div>
+                <div class="card" style="border-left: 3px solid #F59E0B;">
+                    <h4 style="color: #B45309; margin-top: 0;">2. The Burnout & Defeat Cycle</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">Most learners start with unrealistic optimism, bingeing 5 hours on Day 1. On Day 2, life gets busy. By Day 3, they are behind by 8 videos. The looming backlog creates immense psychological friction, leading directly to course abandonment.</p>
+                </div>
+                <div class="card" style="border-left: 3px solid #6366F1;">
+                    <h4 style="color: #4338CA; margin-top: 0;">3. Cloud Bloat & Privacy Loss</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">Modern tracker SaaS tools require creating email accounts, logging into third-party servers, enduring subscriptions, and sending personal study telemetry to the cloud. A study tracker should be private, instantaneous, and lightweight.</p>
+                </div>
+                <div class="card" style="border-left: 3px solid #10B981;">
+                    <h4 style="color: #047857; margin-top: 0;">4. The Format Mismatch</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">Some courses are single 12-hour video marathons with chapter timestamps (e.g., freeCodeCamp, Network+), while others are 100 individual clips. Conventional tools handle only one format, breaking the learner's workflow.</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 8pt;">The Architectural Pillars of M2L (Map to Learn)</h3>
+
+            <table class="feature-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Pillar</th>
+                        <th style="width: 35%;">Traditional Platforms</th>
+                        <th style="width: 40%;">M2L Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Data Privacy</strong></td>
+                        <td>Remote SQL databases, mandatory logins, user tracking.</td>
+                        <td><strong>100% Zero-Cloud:</strong> All state persisted exclusively in browser <code>localStorage</code>. Zero telemetry.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pacing Model</strong></td>
+                        <td>Fixed schedules that break when a day is skipped.</td>
+                        <td><strong>Real-World Calendar Engine:</strong> Calibrates daily focus quotas against real dates with automatic rollover.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backlog Handling</strong></td>
+                        <td>Missed videos clutter the dashboard, creating guilt.</td>
+                        <td><strong>The Backlog & Catch-Up Vault:</strong> Overdue modules isolate automatically with pacing insurance.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Format Versatility</strong></td>
+                        <td>Only supports playlists of individual videos.</td>
+                        <td><strong>Universal Ingestion:</strong> Handles multi-video playlists AND chapter-based One-Shot full courses.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Aesthetic Standard</strong></td>
+                        <td>Cluttered dashboards with ads and distractions.</td>
+                        <td><strong>Agentix Minimalist Aesthetic:</strong> Tactile tickets, lime glow accents, solar flare theme toggle.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-amber" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #B45309;">💡 The Core Philosophy</div>
+                <p style="margin-bottom: 0;"><em>"A learning system should never punish you for being human. If you miss a day, your tracker should protect today's focus, isolate your debt cleanly, and give you realistic mathematical confidence that you will still graduate on time."</em></p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 3: STEP 1 — COMMAND CENTER & COURSE SWITCHER
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 1 • NAVIGATION & SWITCHER</span>
+            </div>
+
+            <h2>Step 1: The Top Navigation Bar & Multi-Course Switcher</h2>
+
+            <p>
+                When you open M2L, the floating top navigation bar serves as your persistent mission control. It houses the course switcher pill, global progress pill, direct anchor links, and the Solar Flare theme toggle.
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/02_course_switcher.png" alt="Course Switcher Dropdown Modal">
+                <div class="screenshot-caption">
+                    <span>FIGURE 1.1: Spacious Top Navigation Bar with Enrolled Course Switcher Dropdown</span>
+                    <span class="badge badge-dark">Command Center</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Switching Active Courses</h4>
+                    <p style="font-size: 8pt;">Click the active course pill (e.g. <code>CompTIA N10-009 Network+</code>) on the left of the navbar. A glassmorphic popover opens showing all enrolled roadmaps with live completion percentages.</p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Adding New Curriculum</h4>
+                    <p style="font-size: 8pt;">Click <code>+ New Course</code> at the top right of the dropdown to instantly scroll to the bottom generator and ingest any public YouTube playlist.</p>
+                </div>
+            </div>
+
+            <h4>Key Navbar Indicators:</h4>
+            <ul>
+                <li><strong>Live Progress Ring:</strong> The right-aligned pill shows total course progress (e.g., <code>0/87 Done (0%)</code>) and animates in real-time as checkboxes are clicked.</li>
+                <li><strong>Quick Jump Anchors:</strong> Seamlessly smooth-scrolls between <em>Overview</em>, <em>Pacing</em>, <em>Today</em>, and <em>Backlog</em>.</li>
+                <li><strong>Solar Flare Theme Button:</strong> Switches between crisp white agency layout and high-contrast dark mode.</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 4: STEP 2 — TACTICAL OVERVIEW & 4 PACING TICKETS
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 2 • TACTICAL OVERVIEW</span>
+            </div>
+
+            <h2>Step 2: The Calibrated Pacing Dashboard (Overview Tickets)</h2>
+
+            <p>
+                Immediately beneath the hero headline, M2L presents four high-contrast <strong>Calibrated Pacing Tickets</strong>. These tickets calculate the exact mathematical commitment required to graduate without burnout:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/01_hero_overview.png" alt="Hero & Overview Pacing Tickets">
+                <div class="screenshot-caption">
+                    <span>FIGURE 2.1: The 4 Calibrated Pacing Tickets (Runtime, Lessons, Timeline, Daily Load)</span>
+                    <span class="badge badge-green">Overview Section</span>
+                </div>
+            </div>
+
+            <div class="grid-4" style="margin-top: 8pt;">
+                <div class="card">
+                    <div style="font-size: 7.5pt; font-family: 'Inter'; color: #64748B; font-weight: 800;">TOTAL DURATION</div>
+                    <div style="font-size: 13pt; font-weight: 900; color: #080C14;">12.9 Hrs</div>
+                    <div style="font-size: 7pt; color: #16A34A; font-weight: 600;">Full playlist runtime</div>
+                </div>
+                <div class="card">
+                    <div style="font-size: 7.5pt; font-family: 'Inter'; color: #64748B; font-weight: 800;">TOTAL VIDEOS</div>
+                    <div style="font-size: 13pt; font-weight: 900; color: #080C14;">87 Lessons</div>
+                    <div style="font-size: 7pt; color: #16A34A; font-weight: 600;">Indexed curriculum</div>
+                </div>
+                <div class="card">
+                    <div style="font-size: 7.5pt; font-family: 'Inter'; color: #64748B; font-weight: 800;">TARGET DAYS</div>
+                    <div style="font-size: 13pt; font-weight: 900; color: #080C14;">14 Days</div>
+                    <div style="font-size: 7pt; color: #16A34A; font-weight: 600;">Calibrated calendar</div>
+                </div>
+                <div class="card">
+                    <div style="font-size: 7.5pt; font-family: 'Inter'; color: #64748B; font-weight: 800;">DAILY FOCUS LOAD</div>
+                    <div style="font-size: 13pt; font-weight: 900; color: #080C14;">0.9 Hrs/Day</div>
+                    <div style="font-size: 7pt; color: #16A34A; font-weight: 600;">Sustained calm pace</div>
+                </div>
+            </div>
+
+            <div class="callout callout-dark" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #20DE6B;">🎯 Why These 4 Metrics Matter</div>
+                <p style="margin-bottom: 0;">Rather than fixating on the scary <em>87 total videos</em>, M2L condenses the entire mountain into <strong>0.9 hours per day</strong>. Knowing you only need ~54 minutes of daily study eliminates anxiety and sets a predictable, sustainable habit.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 5: STEP 3 — TODAY'S COMMAND HUB (DAILY SPRINT)
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 3 • TODAY'S SPRINT</span>
+            </div>
+
+            <h2>Step 3: Today's Command Hub & Daily Study Quotas</h2>
+
+            <p>
+                <strong>Today's Command Hub</strong> (<code>#today</code>) is your daily study sanctum. Instead of scrolling through endless video lists, M2L isolates <em>only the lessons scheduled for today's active sprint</em>.
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/03_today_hub.png" alt="Today's Active Sprint Card">
+                <div class="screenshot-caption">
+                    <span>FIGURE 3.1: Active Sprint Card showing Massive Day Number, Pacing Quota & Video Checklist</span>
+                    <span class="badge badge-dark">Command Hub</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div>
+                    <h4>Active Day Card Features:</h4>
+                    <ul>
+                        <li><strong>Massive Day Number (e.g. "12"):</strong> Instantly identifies your milestone in the 14-day trajectory.</li>
+                        <li><strong>Pacing Quota:</strong> Shows required focus time for today (e.g., <code>1h 51m</code>).</li>
+                        <li><strong>Active Sprint Beacon:</strong> Pulsing green LED indicating the active sprint.</li>
+                        <li><strong>One-Shot Course Pill:</strong> Labels chapter-based marathons.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Interactive Module Controls:</h4>
+                    <ul>
+                        <li><strong>ACTIVE NOW Tag:</strong> Automatically tags the next unfinished video with a glowing badge.</li>
+                        <li><strong>Timestamp Badges:</strong> Direct chapter starts (e.g. <code>@ 00:15:20</code>).</li>
+                        <li><strong>YouTube Direct Launch:</strong> Opens the video at the exact second.</li>
+                        <li><strong>Two-Way Checkbox:</strong> Checking a lesson updates navbar, roadmap, and drawer instantly.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="callout callout-amber" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #B45309;">⏱️ Floating Tactical HUD Toolbar</div>
+                <p style="margin-bottom: 0;">Docked at the bottom is the Floating Tactical HUD. It displays your active day, current lesson title, quick-complete button, and instant drawer toggle wherever you are on the page.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 6: STEP 4 — TODAY'S OVERDUE BACKLOG TRAY
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 4 • INLINE RECOVERY</span>
+            </div>
+
+            <h2>Step 4: Today's Inline Overdue Backlog Catch-Up Tray</h2>
+
+            <p>
+                When you miss lessons from past days, M2L surfaces an amber-tinted <strong>Overdue Backlog Recovery Tray</strong> directly inside Today's Command Hub. You have immediate visibility into missed lessons without disrupting today's clean study load:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/04_today_backlog_tray.png" alt="Today Overdue Backlog Tray">
+                <div class="screenshot-caption">
+                    <span>FIGURE 4.1: The Collapsible Overdue Backlog Tray expanded inside Today's Command Hub</span>
+                    <span class="badge badge-amber">Inline Tray</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #92400E;">Catch-Up Directly in Today's View</h4>
+                    <p style="font-size: 8pt;">Click <code>View Overdue Videos (10) ▾</code> to expand the tray. Each overdue module shows its original Day tag (e.g. <code>DAY 1</code>), duration, title, direct YouTube launch link, and a <code>Catch Up ✓</code> button.</p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Vault Shortcut</h4>
+                    <p style="font-size: 8pt;">Click <code>Vault ↗</code> to jump straight down to the dedicated Backlog & Catch-Up Vault for deep pacing recalculation, auto-rebalancing, or bulk debt clearing.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-dark" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #20DE6B;">🛡️ Automatic Hiding on Debt Clearance</div>
+                <p style="margin-bottom: 0;">Once all overdue lessons are caught up, this tray seamlessly disappears from Today's Command Hub, restoring your view to 100% current day focus.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 7: STEP 5 — THE BACKLOG & CATCH-UP VAULT
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 5 • BACKLOG VAULT</span>
+            </div>
+
+            <h2>Step 5: The Backlog & Catch-Up Vault (Recovery Center)</h2>
+
+            <p>
+                For comprehensive pacing insurance and debt management, scroll to <strong>The Backlog & Catch-Up Vault</strong> (<code>#backlog</code>). This section acts as your psychological pacing safety net:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/05_backlog_vault.png" alt="The Backlog & Catch-Up Vault">
+                <div class="screenshot-caption">
+                    <span>FIGURE 5.1: The Backlog & Catch-Up Vault with Debt Counter, Time Deficit, and Action Controls</span>
+                    <span class="badge badge-dark">Backlog Section</span>
+                </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 8pt;">
+                <div class="card">
+                    <h4 style="color: #92400E; margin-top: 0;">1. Backlog Debt</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">Counts exact overdue modules (e.g., <code>10 Videos</code>). Features an animated amber pulse badge when active debt exists.</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: #92400E; margin-top: 0;">2. Time Deficit</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">Calculates total minutes behind (e.g., <code>1h 51m</code>) and computes exact <code>+X mins/day</code> needed to recover on schedule.</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: #047857; margin-top: 0;">3. Pacing Insurance</h4>
+                    <p style="font-size: 8pt; margin-bottom: 0;">Displays status trajectory (<code>Catch-Up Active</code> or <code>On-Time Trajectory</code>) guaranteeing graduation on Day 14.</p>
+                </div>
+            </div>
+
+            <h4 style="margin-top: 8pt;">Vault Action Controls:</h4>
+            <ul>
+                <li><strong>Auto-Rebalance Quota:</strong> Click to automatically recalculate and redistribute the deficit evenly across the remaining study days.</li>
+                <li><strong>Mark All Caught Up ✓:</strong> Instantly clears all overdue curriculum lessons if you reviewed them outside of the application.</li>
+                <li><strong>Supplementary Ingestion:</strong> Use the input bar at the bottom to queue supplementary readings, lab notes, or documentation into your catch-up queue.</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 8: STEP 6 — THE QUICK PASS DRAWER
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 6 • QUICK PASS DRAWER</span>
+            </div>
+
+            <h2>Step 6: The Quick Pass Slide-In Drawer</h2>
+
+            <p>
+                The <strong>Quick Pass Drawer</strong> is a slide-in side panel that provides rapid, frictionless access to your entire multi-day curriculum without losing your place in Today's Command Hub:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/06_quick_pass_drawer.png" alt="Quick Pass Drawer Opened">
+                <div class="screenshot-caption">
+                    <span>FIGURE 6.1: Slide-In Quick Pass Drawer with Multi-Day Timeline & Overdue Alert Header</span>
+                    <span class="badge badge-green">Drawer Navigation</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Timeline Overview</h4>
+                    <p style="font-size: 8pt;">Every day of the curriculum is organized into collapsible accordions with day titles, video counts, and completion status badges (e.g. <code>3/3 Done</code> or <code>0/6</code>).</p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Instant Two-Way Synchronization</h4>
+                    <p style="font-size: 8pt;">Checking or unchecking any video inside the drawer immediately updates the corresponding card on the main page, recalculates pacing, and syncs local storage.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-amber" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #B45309;">🔔 Drawer Backlog Banner</div>
+                <p style="margin-bottom: 0;">If you have overdue lessons, the drawer header prominently displays an alert banner (e.g. <em>10 Overdue Modules in Backlog</em>). Clicking it smoothly slides the drawer closed and scrolls directly to the Catch-Up Vault.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 9: STEP 7 — FULL ROADMAP & SYLLABUS ARCHIVE
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 7 • SYLLABUS ARCHIVE</span>
+            </div>
+
+            <h2>Step 7: The Full Curriculum Roadmap & Past Archive</h2>
+
+            <p>
+                Positioned directly beneath Today's Command Hub, the <strong>Full Roadmap Section</strong> gives you complete transparency over past completed days, today's sprint, and upcoming modules:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/07_full_roadmap.png" alt="Full Roadmap List Expanded">
+                <div class="screenshot-caption">
+                    <span>FIGURE 7.1: Full 14-Day Roadmap Archive with Past Archive and Upcoming Schedule Modules</span>
+                    <span class="badge badge-dark">Curriculum Archive</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div>
+                    <h4>Three Visual Day States:</h4>
+                    <ul>
+                        <li><strong>Past Days (Archive):</strong> Completed days are cleanly collapsed with green checkmark indicators, showing total videos completed.</li>
+                        <li><strong>Active Day (Today):</strong> Outlined with vibrant brand green, expanded by default, showing active lesson progress.</li>
+                        <li><strong>Upcoming Days:</strong> Clean preview of future lessons, durations, and topics for advance planning.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Full Roadmap Controls:</h4>
+                    <ul>
+                        <li><strong>Expand / Collapse Toggle:</strong> Click <code>View All Days (Days 1–14) ▾</code> to inspect or collapse the full schedule.</li>
+                        <li><strong>Direct Video Checkmarks:</strong> Mark past or future lessons complete if you studied ahead of schedule.</li>
+                        <li><strong>Live Day Progress Bars:</strong> Every day has an individual completion bar showing exact fractional progress.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="callout callout-dark" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #20DE6B;">📊 Milestone Motivation</div>
+                <p style="margin-bottom: 0;">Seeing completed past days collapse into a clean archive gives a tangible sense of momentum and achievement as you march toward your graduation date.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 10: STEP 8 — CUSTOM PLAYLIST INGESTION GENERATOR
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 8 • ROADMAP GENERATOR</span>
+            </div>
+
+            <h2>Step 8: Generating Custom Roadmaps for Any YouTube Playlist</h2>
+
+            <p>
+                M2L is not limited to built-in presets. You can transform <strong>any public YouTube playlist</strong> into an automated pacing roadmap using the bottom glassmorphism generator:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/08_generator_cta.png" alt="Bottom CTA Generator Section">
+                <div class="screenshot-caption">
+                    <span>FIGURE 8.1: Panoramic Mountain Landscape with Frosted Glassmorphism Playlist Generator</span>
+                    <span class="badge badge-green">Generator Section</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div class="card" style="border-left: 3px solid #20DE6B;">
+                    <h4 style="margin-top: 0; color: #080C14;">Mode A: Target Days Mode</h4>
+                    <p style="font-size: 8pt;">Choose this when you have a specific deadline or exam date (e.g., <code>14 Days</code>). M2L analyzes the total playlist runtime and partitions the lessons into equal, balanced daily focus quotas.</p>
+                </div>
+                <div class="card" style="border-left: 3px solid #6366F1;">
+                    <h4 style="margin-top: 0; color: #080C14;">Mode B: Study Hours/Day Mode</h4>
+                    <p style="font-size: 8pt;">Choose this when your daily availability is fixed (e.g., <code>1.5 Hours/Day</code>). M2L calculates how many days the course will take, projects your exact graduation date, and builds the daily calendar.</p>
+                </div>
+            </div>
+
+            <h4 style="margin-top: 8pt;">How to Generate a Custom Course:</h4>
+            <ol>
+                <li>Paste any public YouTube playlist URL or video link into the <strong>YouTube Playlist URL</strong> input.</li>
+                <li>Select your pacing mode (<em>Target Days</em> or <em>Hours / Day</em>).</li>
+                <li>Enter your target quantity (e.g. <code>14</code> days or <code>1.0</code> hour/day).</li>
+                <li>Click <strong>Generate Roadmap ⚡</strong>. M2L auto-indexes the videos, calculates timestamps, and adds the course to your switcher dropdown!</li>
+            </ol>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 11: STEP 9 — SOLAR FLARE THEME & PRIVACY CONTROLS
+    ==================================================================== -->
+    <div class="page">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part II • Visual User Manual</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">STEP 9 • THEME & PRIVACY</span>
+            </div>
+
+            <h2>Step 9: The Solar Flare Theme Engine & Zero-Cloud Privacy</h2>
+
+            <p>
+                M2L includes an elite <strong>Solar Flare</strong> theme toggle. The entire application transitions smoothly between an ultra-clean European white background and an immersive deep slate agentix dark mode:
+            </p>
+
+            <div class="screenshot-container">
+                <img class="screenshot-img" src="tutorial_assets/09_dark_mode.png" alt="Dark Mode Interface">
+                <div class="screenshot-caption">
+                    <span>FIGURE 9.1: High-Contrast Agentix Dark Mode with Vibrant Lime Accents & Deep Slate Cards</span>
+                    <span class="badge badge-dark">Dark Theme</span>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 8pt;">
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Solar Flare Transition</h4>
+                    <p style="font-size: 8pt;">Clicking the Moon/Sun icon triggers a seamless, lag-free CSS transition. Card borders, badges, hover rings, and typography adapt with zero stutter.</p>
+                </div>
+                <div class="card">
+                    <h4 style="margin-top: 0; color: #080C14;">Zero FOUC Technology</h4>
+                    <p style="font-size: 8pt;">Theme state is evaluated inline at the very top of the HTML header. When you reload or reopen the site, there is never a blinding white flash of unstyled content.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-dark" style="margin-top: 8pt;">
+                <div class="callout-title" style="color: #20DE6B;">🔒 Total Client-Side Data Sovereignty</div>
+                <p style="margin-bottom: 0;">Everything you do in M2L—completed videos, active courses, custom notes, theme preference—is stored strictly in your browser's <code>localStorage</code>. No telemetry, no third-party tracking cookies, and no remote servers.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================================
+         PAGE 12: PART III — PRO TIPS, ARCHITECTURE & CONCLUSION
+    ==================================================================== -->
+    <div class="page-last">
+        <div class="page-content">
+            <div class="page-meta-header">
+                <span class="badge badge-green">Part III • Mastery & Reference</span>
+                <span style="font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">SUMMARY & PRO TIPS</span>
+            </div>
+
+            <h2>Best Practices for Finishing Courses with M2L</h2>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4 style="color: #080C14; margin-top: 0;">1. Respect the Daily Quota</h4>
+                    <p style="font-size: 8pt;">When Today's Command Hub reaches <code>100% Completed</code>, resist the urge to binge tomorrow's modules. Consistency beats intensity. Stop, rest, and return tomorrow for sustained momentum.</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: #080C14; margin-top: 0;">2. Use Backlog as Insurance</h4>
+                    <p style="font-size: 8pt;">If you miss a day, do not try to double your study load today. Use the <code>Auto-Rebalance Quota</code> button to spread the deficit across the remaining days of your timeline.</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: #080C14; margin-top: 0;">3. Use Direct YouTube Links</h4>
+                    <p style="font-size: 8pt;">Avoid browsing through YouTube recommendations. Click the <code>YouTube ↗</code> or <code>Watch @ timestamp</code> button directly from M2L to stay focused and avoid algorithmic rabbit holes.</p>
+                </div>
+                <div class="card">
+                    <h4 style="color: #080C14; margin-top: 0;">4. Backup Your Local Storage</h4>
+                    <p style="font-size: 8pt;">Because M2L is 100% zero-cloud, all your completions live in your browser's local storage. Avoid clearing site data for the domain to preserve your graduation roadmap.</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 8pt;">Technical Architecture Cheat Sheet</h3>
+
+            <table class="feature-table">
+                <thead>
+                    <tr>
+                        <th>Subsystem</th>
+                        <th>Implementation Mechanism</th>
+                        <th>Key Storage Key / Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Local Persistence</strong></td>
+                        <td>Browser LocalStorage Engine</td>
+                        <td><code>m2l_completed_v1</code>, <code>m2l_course_progress</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calendar Rollover</strong></td>
+                        <td>Real-world Date Calibrator</td>
+                        <td><code>getCourseCurrentCalendarDay(course)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Debt Aggregator</strong></td>
+                        <td>Past-Day Incomplete Scanner</td>
+                        <td><code>updateBacklogEngine()</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Theme Engine</strong></td>
+                        <td>FOUC-free DOM class toggle</td>
+                        <td><code>localStorage.getItem('m2l_theme')</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Course Switcher</strong></td>
+                        <td>Multi-Track Ingestion</td>
+                        <td><code>PRESET_COURSES</code> & Custom Ingestion</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-dark" style="margin-top: 10pt;">
+                <div class="callout-title" style="color: #20DE6B;">🎓 Final Words from the Creator</div>
+                <p style="margin-bottom: 0;">
+                    <em>"M2L was built with one goal: to empower self-directed learners to conquer large, difficult video courses without burnout, cloud tracking, or guilt. Learn with intention, respect your daily quota, and enjoy your journey to graduation."</em>
+                </p>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--brand-border); padding-top: 6pt; margin-top: 10pt; display: flex; justify-content: space-between; font-size: 7.5pt; color: #94A3B8; font-family: 'Inter';">
+            <span>M2L • Map to Learn — Zero-Cloud YouTube Playlist Tracker</span>
+            <span>GitHub: https://github.com/naringrekarneel/M2L</span>
+        </div>
+    </div>
+
+</body>
+</html>

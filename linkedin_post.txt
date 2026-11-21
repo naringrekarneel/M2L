@@ -1,0 +1,34 @@
+Self-directed learning on YouTube is one of the most accessible ways to acquire modern skills, yet studies show that over 90% of learners drop out before completing a playlist. 
+
+The issue is rarely a lack of motivation. Traditional video playlists simply lack structural discipline: there are no daily targets, no calendar pacing, and missing a single day often leads to abandonment due to cognitive overload.
+
+To solve this, I designed and engineered M2L (Map to Learn)—a zero-cloud, local-first learning roadmap engine that transforms unstructured video playlists into sustainable, daily study sprints.
+
+Whether you are a student preparing for certifications or an engineering team assessing product craftsmanship, here is an overview of how the platform functions:
+
+1. The Daily Command Hub
+Instead of confronting an intimidating 80-video playlist, learners are presented only with their assigned quota for the current calendar day. An active beacon highlights the current module alongside exact runtimes, chapter timestamps, and direct YouTube launch links.
+
+2. Automated Calendar Rollover
+M2L anchors directly to the user's local calendar. Progress advances organically day by day, providing predictable pacing without requiring manual date resets.
+
+3. The Backlog and Catch-Up Vault
+Life happens, and missing a study session is inevitable. Rather than cluttering the active dashboard and inducing guilt, incomplete modules from prior days isolate automatically into a Catch-Up Vault. The system calculates the exact time deficit and redistributes the load across remaining days to safeguard the graduation timeline.
+
+4. Quick Pass Drawer and Roadmap Archive
+Learners can inspect their entire syllabus through an expandable 14-day roadmap and an instant slide-in drawer, featuring two-way synchronization across all interface components.
+
+5. Universal Playlist Ingestion
+Users can paste any public YouTube playlist URL and choose between two pacing models: Target Days (fixed deadline) or Study Hours per Day (fixed capacity). It supports both multi-video playlists and monolithic single-video courses with chapter markers.
+
+6. 100% Zero-Cloud Architecture
+M2L requires zero account signups, zero remote databases, and tracks zero user telemetry. All data is managed on the client side using browser storage, ensuring absolute privacy, offline persistence, and instantaneous load times.
+
+Live Application: https://m2l-ivory.vercel.app/
+Source Code: https://github.com/naringrekarneel/M2L
+
+A comprehensive 12-page technical architecture and visual user manual is attached as a document below. 
+
+Feedback from students, educators, and engineering leaders is warmly welcomed.
+
+#softwareengineering #webdevelopment #productivity #frontend #opensource #education #javascript #systemdesign
